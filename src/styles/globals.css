@@ -1,26 +1,39 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
-    Helvetica Neue, sans-serif;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
+@import url('https://rsms.me/inter/inter.css');
 
 * {
   box-sizing: border-box;
+}
+
+html,
+body,
+#__next {
+  height: 100%;
+  width: 100%;
+}
+
+html {
+  font-family: 'Inter', sans-serif;
+}
+
+@supports (font-variation-settings: normal) {
+  html {
+    font-family: 'Inter var', sans-serif;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
+
   body {
     color: white;
     background: black;
   }
+}
+
+#__next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
