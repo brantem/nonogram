@@ -11,7 +11,6 @@ type NonogramState = {
     row: number[][];
     column: number[][];
   };
-  isFinish: boolean;
 
   setup: (rows: number, columns: number) => void;
   generate: () => void;
@@ -29,7 +28,6 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
 
   grid: [],
   hints: { row: [], column: [] },
-  isFinish: false,
 
   setup: (rows, columns) => set({ rows, columns }),
   generate: () => {
@@ -54,19 +52,22 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
       column: _generateHints(grid, 'column'),
     };
 
-    set({ grid, hints, isFinish: false });
+    set({ grid, hints });
   },
   handleCellClick: (row, column) => {
-    const { grid, isFinish, _autoFill } = get();
-    if (isFinish || !!grid[row][column][1]) return;
+    const { grid, generate, _autoFill } = get();
+    if (!!grid[row][column][1]) return;
 
     let _grid = grid;
     _grid[row][column][1] = CellStatus.Filled;
 
-    set({
-      grid: _autoFill(_grid, row, column),
-      isFinish: _grid.every((row) => row.every(isCorrect)),
-    });
+    set({ grid: _autoFill(_grid, row, column) });
+
+    if (_grid.every((row) => row.every(isCorrect))) {
+      setTimeout(() => {
+        generate();
+      }, 250);
+    }
   },
 
   _autoFill: (grid, row, column) => {
