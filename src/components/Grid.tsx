@@ -18,7 +18,7 @@ const Grid = () => {
           border-width: 1px;
           border-style: solid;
           border-color: black;
-          border-radius: 0.125rem;
+          border-radius: 0.25rem;
           height: var(--grid-item-size);
           width: var(--grid-item-size);
           cursor: pointer;

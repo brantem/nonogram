@@ -42,19 +42,26 @@ const Hints = ({ direction }: HintsProps) => {
           }
         }
 
-        .hints.column .hints-item {
-          grid-template-rows: repeat(var(--hints-item-lines), var(--grid-item-size));
+        .hints.row .hints-item {
+          grid-template-columns: repeat(var(--hints-item-lines), 1fr);
         }
 
-        .hints.row .hints-item {
-          grid-template-columns: repeat(var(--hints-item-lines), var(--grid-item-size));
+        .hints.column .hints-item {
+          grid-template-rows: repeat(var(--hints-item-lines), 1fr);
         }
 
         .hints-item-line {
-          text-align: center;
-          height: var(--grid-item-size);
-          width: var(--grid-item-size);
-          line-height: var(--grid-item-size);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .hints.row .hints-item-line {
+          width: calc(var(--grid-item-size) - 1rem);
+        }
+
+        .hints.column .hints-item-line {
+          height: calc(var(--grid-item-size) - 1rem);
         }
 
         .hints-item-line.empty {
