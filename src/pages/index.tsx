@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import type { NextPage } from 'next';
 
-import Grid from '../components/Grid';
-import Hints from '../components/Hints';
+import Grid from 'components/Grid';
+import Hints from 'components/Hints';
 
-import { useNonogramStore } from '../lib/stores';
+import { useNonogramStore } from 'lib/stores';
 
 const Home: NextPage = () => {
   const { generate } = useNonogramStore();

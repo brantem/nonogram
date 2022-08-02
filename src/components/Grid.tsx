@@ -1,5 +1,5 @@
-import { useNonogramStore } from '../lib/stores';
-import { CellStatus } from '../types/nonogram';
+import { useNonogramStore } from 'lib/stores';
+import { CellStatus } from 'types/nonogram';
 
 const Grid = () => {
   const { rows, columns, grid, handleCellClick } = useNonogramStore();

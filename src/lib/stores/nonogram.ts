@@ -1,6 +1,6 @@
 import create from 'zustand';
 
-import { Cell, CellStatus } from '../../types/nonogram';
+import { Cell, CellStatus } from 'types/nonogram';
 
 type NonogramState = {
   rows: number;

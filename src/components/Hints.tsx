@@ -1,4 +1,4 @@
-import { useNonogramStore } from '../lib/stores';
+import { useNonogramStore } from 'lib/stores';
 
 type HintsProps = {
   direction: 'vertical' | 'horizontal';

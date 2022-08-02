@@ -1,1 +1,1 @@
-export { useNonogramStore } from './nonogram';
+export { useNonogramStore } from 'lib/stores/nonogram';
