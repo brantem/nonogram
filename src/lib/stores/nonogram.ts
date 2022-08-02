@@ -46,9 +46,11 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
     set({ grid });
 
     for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < columns; j++) {
-        _autoFill(i, j);
-      }
+      _autoFill(i, 0);
+    }
+
+    for (let i = 0; i < columns; i++) {
+      _autoFill(0, i);
     }
 
     const hints = { row: _generateHints('row'), column: _generateHints('column') };
@@ -71,14 +73,12 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
   _autoFill: (row, column) => {
     const { rows, columns, grid, _isLineCorrect } = get();
 
-    // row
     if (_isLineCorrect('row', row)) {
       for (let i = 0; i < columns; i++) {
         grid[row][i][1] = grid[row][i][1] || CellStatus.Marked;
       }
     }
 
-    // row
     if (_isLineCorrect('column', column)) {
       for (let i = 0; i < rows; i++) {
         grid[i][column][1] = grid[i][column][1] || CellStatus.Marked;
