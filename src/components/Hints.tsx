@@ -17,14 +17,14 @@ const Hints = ({ direction }: HintsProps) => {
         }
 
         .hints.row {
-          grid-template-rows: repeat(${rows}, 2rem);
+          grid-template-rows: repeat(${rows}, var(--grid-item-size));
           margin-right: 0.5rem;
           justify-items: end;
           right: 100%;
         }
 
         .hints.column {
-          grid-template-columns: repeat(${columns}, 2rem);
+          grid-template-columns: repeat(${columns}, var(--grid-item-size));
           margin-bottom: 0.5rem;
           align-self: flex-end;
           align-items: end;
@@ -33,28 +33,28 @@ const Hints = ({ direction }: HintsProps) => {
 
         .hints-item {
           display: grid;
-        }
-
-        .hints.column .hints-item {
-          grid-template-rows: repeat(var(--hints-item-lines), 2rem);
-        }
-
-        .hints.row .hints-item {
-          grid-template-columns: repeat(var(--hints-item-lines), 2rem);
-        }
-
-        .hints-item-line {
           color: black;
-          text-align: center;
-          height: 2rem;
-          width: 2rem;
-          line-height: 2rem;
         }
 
         @media (prefers-color-scheme: dark) {
-          .hints-item-line {
+          .hints-item {
             color: white;
           }
+        }
+
+        .hints.column .hints-item {
+          grid-template-rows: repeat(var(--hints-item-lines), var(--grid-item-size));
+        }
+
+        .hints.row .hints-item {
+          grid-template-columns: repeat(var(--hints-item-lines), var(--grid-item-size));
+        }
+
+        .hints-item-line {
+          text-align: center;
+          height: var(--grid-item-size);
+          width: var(--grid-item-size);
+          line-height: var(--grid-item-size);
         }
 
         .hints-item-line.empty {
@@ -65,15 +65,11 @@ const Hints = ({ direction }: HintsProps) => {
       <div className={'hints ' + (direction === 'horizontal' ? 'column' : 'row')}>
         {(direction === 'horizontal' ? hints.column : hints.row).map((lines, i) => (
           <div key={i} className="hints-item" style={{ '--hints-item-lines': lines.length } as any}>
-            {lines.length > 0 ? (
-              lines.map((line, j) => (
-                <div className="hints-item-line" key={j}>
-                  {line}
-                </div>
-              ))
-            ) : (
-              <div className="hints-item-line empty">0</div>
-            )}
+            {lines.map((line, j) => (
+              <div className="hints-item-line" key={j}>
+                {line}
+              </div>
+            ))}
           </div>
         ))}
       </div>

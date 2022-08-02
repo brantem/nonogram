@@ -1,5 +1,7 @@
-export interface LineOfHints extends Array<number> {
-  isCorrect?: boolean;
+export enum CellStatus {
+  Empty,
+  Filled,
+  Marked,
 }
 
-export type Direction = 'row' | 'column';
+export type Cell = [0 | 1] | [0 | 1, CellStatus];

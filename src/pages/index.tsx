@@ -7,7 +7,7 @@ import Hints from '../components/Hints';
 import { useNonogramStore } from '../lib/stores';
 
 const Home: NextPage = () => {
-  const generate = useNonogramStore((state) => state.generate);
+  const { generate } = useNonogramStore();
 
   useEffect(() => {
     generate();
