@@ -16,16 +16,26 @@ const Home: NextPage = () => {
   return (
     <>
       <style jsx>{`
+        .container {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .inner-container {
+          display: flex;
+        }
+
         .generate-button {
           position: fixed;
           bottom: 10vh;
         }
       `}</style>
 
-      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+      <div className="container">
         <Hints direction="horizontal" />
 
-        <div style={{ display: 'flex' }}>
+        <div className="inner-container">
           <Hints direction="vertical" />
           <Grid />
         </div>
