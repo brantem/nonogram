@@ -35,9 +35,17 @@ const Hints = ({ direction }: HintsProps) => {
           color: black;
         }
 
+        .hints-item.is-correct {
+          color: hsl(120, 100%, 45%);
+        }
+
         @media (prefers-color-scheme: dark) {
           .hints-item {
             color: white;
+          }
+
+          .hints-item.is-correct {
+            color: hsl(120, 100%, 80%);
           }
         }
 
@@ -69,9 +77,13 @@ const Hints = ({ direction }: HintsProps) => {
       `}</style>
 
       <div className={'hints ' + (direction === 'horizontal' ? 'column' : 'row')}>
-        {(direction === 'horizontal' ? hints.column : hints.row).map((lines, i) => (
-          <div key={i} className="hints-item" style={{ '--hints-item-lines': lines.length } as any}>
-            {lines.map((line, j) => (
+        {(direction === 'horizontal' ? hints.column : hints.row).map((hint, i) => (
+          <div
+            key={i}
+            className={'hints-item' + (hint.isCorrect ? ' is-correct' : '')}
+            style={{ '--hints-item-lines': hint.lines.length } as any}
+          >
+            {hint.lines.map((line, j) => (
               <div className="hints-item-line" key={j}>
                 {line}
               </div>

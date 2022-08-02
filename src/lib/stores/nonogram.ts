@@ -1,6 +1,8 @@
 import create from 'zustand';
 
-import { Cell, CellStatus } from 'types/nonogram';
+import { Cell, CellStatus, Hint } from 'types/nonogram';
+
+type Direction = 'row' | 'column';
 
 type NonogramState = {
   rows: number;
@@ -8,16 +10,17 @@ type NonogramState = {
 
   grid: Cell[][];
   hints: {
-    row: number[][];
-    column: number[][];
+    row: Hint[];
+    column: Hint[];
   };
 
   setup: (rows: number, columns: number) => void;
   generate: () => void;
   handleCellClick: (row: number, column: number) => void;
 
-  _autoFill: (grid: Cell[][], row: number, column: number) => Cell[][];
-  _generateHints: (grid: Cell[][], direction: 'row' | 'column') => number[][];
+  _autoFill: (row: number, column: number) => void;
+  _isLineCorrect: (direction: Direction, index: number) => boolean;
+  _generateHints: (direction: Direction) => Hint[];
 };
 
 const isCorrect = (cell: Cell) => cell[0] === 0 || (cell[0] === 1 && cell[1] === CellStatus.Filled);
@@ -40,89 +43,94 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
         grid[i][j] = [Math.random() < 0.5 ? 0 : 1];
       }
     }
+    set({ grid });
 
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < columns; j++) {
-        grid = _autoFill(grid, i, j);
+        _autoFill(i, j);
       }
     }
 
-    const hints = {
-      row: _generateHints(grid, 'row'),
-      column: _generateHints(grid, 'column'),
-    };
-
-    set({ grid, hints });
+    const hints = { row: _generateHints('row'), column: _generateHints('column') };
+    set({ hints });
   },
   handleCellClick: (row, column) => {
-    const { grid, generate, _autoFill } = get();
+    const { grid, hints, generate, _autoFill, _isLineCorrect } = get();
     if (!!grid[row][column][1]) return;
 
-    let _grid = grid;
-    _grid[row][column][1] = CellStatus.Filled;
+    grid[row][column][1] = CellStatus.Filled;
+    _autoFill(row, column);
 
-    set({ grid: _autoFill(_grid, row, column) });
+    hints.row[row].isCorrect = _isLineCorrect('row', row);
+    hints.column[column].isCorrect = _isLineCorrect('column', column);
+    set({ hints });
 
-    if (_grid.every((row) => row.every(isCorrect))) {
-      setTimeout(() => {
-        generate();
-      }, 250);
-    }
+    if (grid.every((row) => row.every(isCorrect))) setTimeout(generate, 500);
   },
 
-  _autoFill: (grid, row, column) => {
-    const { rows, columns } = get();
+  _autoFill: (row, column) => {
+    const { rows, columns, grid, _isLineCorrect } = get();
 
-    // column
-    if (grid[row].every(isCorrect)) {
+    // row
+    if (_isLineCorrect('row', row)) {
       for (let i = 0; i < columns; i++) {
         grid[row][i][1] = grid[row][i][1] || CellStatus.Marked;
       }
     }
 
     // row
-    if (grid.every((row) => isCorrect(row[column]))) {
+    if (_isLineCorrect('column', column)) {
       for (let i = 0; i < rows; i++) {
         grid[i][column][1] = grid[i][column][1] || CellStatus.Marked;
       }
     }
 
-    return grid;
+    set({ grid });
   },
-  _generateHints: (grid, direction) => {
-    const { rows, columns } = get();
+  _isLineCorrect: (direction, index) => {
+    const { grid } = get();
+
+    switch (direction) {
+      case 'row':
+        return grid[index].every(isCorrect);
+      case 'column':
+        return grid.every((row) => isCorrect(row[index]));
+    }
+  },
+  _generateHints: (direction) => {
+    const { rows, columns, grid } = get();
     let hints = [];
 
     switch (direction) {
       case 'row':
         for (let i = 0; i < rows; i++) {
-          const hint = [];
-          let temp = 0;
+          const hint: Hint = { lines: [], isCorrect: false };
+          let line = 0;
           for (let j = 0; j < columns; j++) {
             if (grid[i][j][0] === 0) {
-              if (temp > 0) hint.push(temp);
-              temp = 0;
+              if (line > 0) hint.lines.push(line);
+              line = 0;
               continue;
             }
-            temp += grid[i][j][0];
+            line += grid[i][j][0];
           }
-          if (temp > 0) hint.push(temp);
+          if (line > 0) hint.lines.push(line);
           hints.push(hint);
         }
         break;
       case 'column':
         for (let i = 0; i < columns; i++) {
-          const hint = [];
-          let temp = 0;
+          const hint: Hint = { lines: [], isCorrect: false };
+          let line = 0;
           for (let j = 0; j < rows; j++) {
             if (grid[j][i][0] === 0) {
-              if (temp > 0) hint.push(temp);
-              temp = 0;
+              if (line > 0) hint.lines.push(line);
+              line = 0;
               continue;
             }
-            temp += grid[j][i][0];
+            line += grid[j][i][0];
           }
-          if (temp > 0) hint.push(temp);
+          if (line > 0) hint.lines.push(line);
           hints.push(hint);
         }
         break;

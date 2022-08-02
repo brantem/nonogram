@@ -5,3 +5,8 @@ export enum CellStatus {
 }
 
 export type Cell = [0 | 1] | [0 | 1, CellStatus];
+
+export type Hint = {
+  lines: number[];
+  isCorrect: boolean;
+};
