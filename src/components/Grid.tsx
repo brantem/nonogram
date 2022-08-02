@@ -11,24 +11,30 @@ const Grid = () => {
           display: grid;
           grid-template-rows: repeat(${rows}, var(--grid-item-size));
           grid-template-columns: repeat(${columns}, var(--grid-item-size));
-          grid-gap: 0.5rem;
+          gap: 1px;
+          border: 1px solid black;
+          border-radius: 0.25rem;
+          overflow: hidden;
+          background-color: black;
         }
 
         .grid-item {
-          border-width: 1px;
-          border-style: solid;
-          border-color: black;
-          border-radius: 0.25rem;
           height: var(--grid-item-size);
           width: var(--grid-item-size);
           cursor: pointer;
           line-height: var(--grid-item-size);
           text-align: center;
+          background-color: white;
         }
 
         @media (prefers-color-scheme: dark) {
+          .grid {
+            background-color: white;
+            border: 1px solid white;
+          }
+
           .grid-item {
-            border-color: white;
+            background-color: black;
           }
         }
 

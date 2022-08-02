@@ -12,7 +12,6 @@ const Hints = ({ direction }: HintsProps) => {
       <style jsx>{`
         .hints {
           display: grid;
-          gap: 0.5rem;
           position: absolute;
         }
 
