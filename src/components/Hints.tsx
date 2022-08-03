@@ -11,19 +11,20 @@ const Hints = ({ direction }: HintsProps) => {
   return (
     <>
       <style jsx>{`
-        .hints {
+        #hints {
           display: grid;
           position: absolute;
+          gap: 1px;
         }
 
-        .hints.row {
+        #hints.row {
           grid-template-rows: repeat(${rows}, var(--grid-item-size));
           margin-right: 0.5rem;
           justify-items: end;
           right: 100%;
         }
 
-        .hints.column {
+        #hints.column {
           grid-template-columns: repeat(${columns}, var(--grid-item-size));
           margin-bottom: 0.5rem;
           align-self: flex-end;
@@ -42,11 +43,11 @@ const Hints = ({ direction }: HintsProps) => {
           }
         }
 
-        .hints.row .hints-item {
+        #hints.row .hints-item {
           grid-template-columns: repeat(var(--hints-item-lines), 1fr);
         }
 
-        .hints.column .hints-item {
+        #hints.column .hints-item {
           grid-template-rows: repeat(var(--hints-item-lines), 1fr);
         }
 
@@ -66,16 +67,16 @@ const Hints = ({ direction }: HintsProps) => {
           }
         }
 
-        .hints.row .hints-item-line {
-          width: calc(var(--grid-item-size) - 1rem);
+        #hints.row .hints-item-line {
+          width: calc(var(--grid-item-size) - 1.75rem);
         }
 
-        .hints.column .hints-item-line {
-          height: calc(var(--grid-item-size) - 1rem);
+        #hints.column .hints-item-line {
+          height: calc(var(--grid-item-size) - 1.5rem);
         }
       `}</style>
 
-      <div className={'hints ' + (direction === 'horizontal' ? 'column' : 'row')}>
+      <div id="hints" className={direction === 'horizontal' ? 'column' : 'row'}>
         {hints.map((hint, i) => (
           <div key={i} className={'hints-item'} style={{ '--hints-item-lines': hint.length } as any}>
             {hint.map((line, j) => (

@@ -7,7 +7,7 @@ const Grid = () => {
   return (
     <>
       <style jsx>{`
-        .grid {
+        #grid {
           display: grid;
           grid-template-rows: repeat(${rows}, var(--grid-item-size));
           grid-template-columns: repeat(${columns}, var(--grid-item-size));
@@ -25,10 +25,11 @@ const Grid = () => {
           line-height: var(--grid-item-size);
           text-align: center;
           background-color: white;
+          border: 0;
         }
 
         @media (prefers-color-scheme: dark) {
-          .grid {
+          #grid {
             background-color: white;
             border: 1px solid white;
           }
@@ -53,10 +54,10 @@ const Grid = () => {
         }
       `}</style>
 
-      <div className="grid">
+      <div id="grid">
         {grid.map((row, i) =>
           row.map((cell, j) => (
-            <div
+            <button
               key={'' + i + j}
               className={
                 'grid-item' +
@@ -71,7 +72,7 @@ const Grid = () => {
               onClick={() => handleCellClick(i, j)}
             >
               {cell[1] === CellStatus.Marked ? '✕' : ''}
-            </div>
+            </button>
           ))
         )}
       </div>
