@@ -28,7 +28,11 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
   grid: [],
   hints: { row: [], column: [] },
 
-  setup: (rows, columns) => set({ rows, columns }),
+  setup: (rows, columns) => {
+    const { generate } = get();
+    set({ rows, columns });
+    generate();
+  },
   generate: () => {
     const { rows, columns, _autoFill } = get();
 

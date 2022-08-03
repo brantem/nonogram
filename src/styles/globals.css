@@ -1,9 +1,5 @@
 @import url('https://rsms.me/inter/inter.css');
 
-:root {
-  --grid-item-size: 3rem;
-}
-
 * {
   box-sizing: border-box;
 }

@@ -68,11 +68,11 @@ const Hints = ({ direction }: HintsProps) => {
         }
 
         #hints.row .hints-item-line {
-          width: calc(var(--grid-item-size) - 1.75rem);
+          width: calc(var(--grid-item-size) - var(--grid-item-size) / 2);
         }
 
         #hints.column .hints-item-line {
-          height: calc(var(--grid-item-size) - 1.5rem);
+          height: calc(var(--grid-item-size) - var(--grid-item-size) / 3);
         }
       `}</style>
 

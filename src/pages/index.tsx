@@ -7,7 +7,7 @@ import Hints from 'components/Hints';
 import { useNonogramStore } from 'lib/stores';
 
 const Home: NextPage = () => {
-  const { generate } = useNonogramStore();
+  const { rows, columns, setup, generate } = useNonogramStore();
 
   useEffect(() => {
     generate();
@@ -26,9 +26,20 @@ const Home: NextPage = () => {
           display: flex;
         }
 
-        .generate-button {
+        .bottom-container {
           position: fixed;
           bottom: 10vh;
+          display: flex;
+        }
+
+        .generate-button {
+          margin-left: 1rem;
+        }
+      `}</style>
+
+      <style jsx global>{`
+        :root {
+          --grid-item-size: ${rows * columns >= 25 ? 2.25 : 3}rem;
         }
       `}</style>
 
@@ -41,9 +52,23 @@ const Home: NextPage = () => {
         </div>
       </div>
 
-      <button className="generate-button" onClick={generate}>
-        Refresh
-      </button>
+      <div className="bottom-container">
+        <select
+          value={rows + 'x' + columns}
+          onChange={(e) => {
+            const [_rows, _columns] = e.target.value.split('x');
+            setup(parseInt(_rows), parseInt(_columns));
+          }}
+        >
+          <option value="5x5">5x5</option>
+          <option value="6x6">6x6</option>
+          <option value="7x7">7x7</option>
+        </select>
+
+        <button className="generate-button" onClick={generate}>
+          Refresh
+        </button>
+      </div>
     </>
   );
 };
