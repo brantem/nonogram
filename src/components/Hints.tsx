@@ -5,7 +5,8 @@ type HintsProps = {
 };
 
 const Hints = ({ direction }: HintsProps) => {
-  const { rows, columns, hints } = useNonogramStore();
+  const { rows, columns, generateHints } = useNonogramStore();
+  const hints = generateHints(direction === 'horizontal' ? 'column' : 'row');
 
   return (
     <>
@@ -35,17 +36,9 @@ const Hints = ({ direction }: HintsProps) => {
           color: black;
         }
 
-        .hints-item.is-correct {
-          color: hsl(120, 100%, 45%);
-        }
-
         @media (prefers-color-scheme: dark) {
           .hints-item {
             color: white;
-          }
-
-          .hints-item.is-correct {
-            color: hsl(120, 100%, 80%);
           }
         }
 
@@ -63,6 +56,16 @@ const Hints = ({ direction }: HintsProps) => {
           justify-content: center;
         }
 
+        .hints-item-line.is-correct {
+          color: hsl(120, 100%, 45%);
+        }
+
+        @media (prefers-color-scheme: dark) {
+          .hints-item-line.is-correct {
+            color: hsl(120, 100%, 80%);
+          }
+        }
+
         .hints.row .hints-item-line {
           width: calc(var(--grid-item-size) - 1rem);
         }
@@ -70,22 +73,14 @@ const Hints = ({ direction }: HintsProps) => {
         .hints.column .hints-item-line {
           height: calc(var(--grid-item-size) - 1rem);
         }
-
-        .hints-item-line.empty {
-          color: gray;
-        }
       `}</style>
 
       <div className={'hints ' + (direction === 'horizontal' ? 'column' : 'row')}>
-        {(direction === 'horizontal' ? hints.column : hints.row).map((hint, i) => (
-          <div
-            key={i}
-            className={'hints-item' + (hint.isCorrect ? ' is-correct' : '')}
-            style={{ '--hints-item-lines': hint.lines.length } as any}
-          >
-            {hint.lines.map((line, j) => (
-              <div className="hints-item-line" key={j}>
-                {line}
+        {hints.map((hint, i) => (
+          <div key={i} className={'hints-item'} style={{ '--hints-item-lines': hint.length } as any}>
+            {hint.map((line, j) => (
+              <div className={'hints-item-line' + (line[1] === 1 ? ' is-correct' : '')} key={j}>
+                {line[0]}
               </div>
             ))}
           </div>
