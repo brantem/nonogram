@@ -7,7 +7,7 @@ import Hints from 'components/Hints';
 import { useNonogramStore } from 'lib/stores';
 
 const Home: NextPage = () => {
-  const { rows, columns, setup, generate } = useNonogramStore();
+  const { rows, columns, setup, generate, undo } = useNonogramStore();
 
   useEffect(() => {
     generate();
@@ -32,6 +32,7 @@ const Home: NextPage = () => {
           display: flex;
         }
 
+        .undo-button,
         .generate-button {
           margin-left: 1rem;
         }
@@ -65,6 +66,9 @@ const Home: NextPage = () => {
           <option value="7x7">7x7</option>
         </select>
 
+        <button className="undo-button" onClick={undo}>
+          Undo
+        </button>
         <button className="generate-button" onClick={generate}>
           Refresh
         </button>

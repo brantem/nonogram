@@ -1,6 +1,6 @@
 import create from 'zustand';
 
-import { Cell, CellStatus, Hint } from 'types/nonogram';
+import { Cell, CellStatus, AutoFillHistory, History, Hint } from 'types/nonogram';
 
 type Direction = 'row' | 'column';
 
@@ -9,10 +9,12 @@ type NonogramState = {
   columns: number;
 
   grid: Cell[][];
+  histories: History[];
 
   setup: (rows: number, columns: number) => void;
   generate: () => void;
   handleCellClick: (row: number, column: number) => void;
+  undo: () => void;
   generateHints: (direction: Direction) => Hint[];
 
   _autoFill: (row: number, column: number) => void;
@@ -26,7 +28,7 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
   columns: 5,
 
   grid: [],
-  hints: { row: [], column: [] },
+  histories: [],
 
   setup: (rows, columns) => {
     const { generate } = get();
@@ -43,24 +45,35 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
         grid[i][j] = [Math.random() < 0.5 ? 0 : 1];
       }
     }
-    set({ grid });
+    set({ grid, histories: [] });
 
-    for (let i = 0; i < rows; i++) {
-      _autoFill(i, 0);
-    }
-
-    for (let i = 0; i < columns; i++) {
-      _autoFill(0, i);
-    }
+    for (let i = 0; i < rows; i++) _autoFill(i, 0);
+    for (let i = 0; i < columns; i++) _autoFill(0, i);
   },
   handleCellClick: (row, column) => {
-    const { grid, generate, _autoFill } = get();
+    const { grid, histories, generate, _autoFill } = get();
     if (!!grid[row][column][1]) return;
 
+    set({ histories: [...histories, [row, column]] });
     grid[row][column][1] = CellStatus.Filled;
     _autoFill(row, column);
 
     if (grid.every((row) => row.every(isCorrect))) setTimeout(generate, 500);
+  },
+  undo: () => {
+    const { grid, histories } = get();
+    if (!histories.length) return false;
+
+    const [row, column, _histories] = histories.slice(-1)[0];
+    grid[row][column] = [grid[row][column][0]];
+
+    if (_histories) {
+      for (let i = 0; i < _histories.length; i++) {
+        grid[_histories[i][0]][_histories[i][1]] = [grid[_histories[i][0]][_histories[i][1]][0]];
+      }
+    }
+
+    set({ grid, histories: histories.slice(0, -1) });
   },
   generateHints: (direction) => {
     const { rows, columns, grid } = get();
@@ -112,21 +125,37 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
   },
 
   _autoFill: (row, column) => {
-    const { rows, columns, grid, _isLineCorrect } = get();
+    const { rows, columns, grid, histories, _isLineCorrect } = get();
 
+    let _histories: AutoFillHistory[] = [];
     if (_isLineCorrect('row', row)) {
       for (let i = 0; i < columns; i++) {
-        grid[row][i][1] = grid[row][i][1] || CellStatus.Marked;
+        if (grid[row][i].length === 2) continue;
+        grid[row][i][1] = CellStatus.Marked;
+        _histories.push([row, i]);
       }
     }
 
     if (_isLineCorrect('column', column)) {
       for (let i = 0; i < rows; i++) {
-        grid[i][column][1] = grid[i][column][1] || CellStatus.Marked;
+        if (grid[i][column].length === 2) continue;
+        grid[i][column][1] = CellStatus.Marked;
+        _histories.push([i, column]);
       }
     }
 
-    set({ grid });
+    if (histories.length && _histories.length) {
+      let history = histories[histories.length - 1];
+      if (history.length === 2) {
+        history = [...history, _histories];
+      } else {
+        history[2].concat(_histories);
+      }
+
+      set({ grid, histories: [...histories.slice(0, -1), history] });
+    } else {
+      set({ grid });
+    }
   },
   _isLineCorrect: (direction, index) => {
     const { grid } = get();
