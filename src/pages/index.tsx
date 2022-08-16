@@ -40,7 +40,7 @@ const Home: NextPage = () => {
 
       <style jsx global>{`
         :root {
-          --grid-item-size: ${rows * columns >= 25 ? 2.25 : 3}rem;
+          --grid-item-size: ${rows * columns > 25 ? 2.25 : 3}rem;
         }
       `}</style>
 
