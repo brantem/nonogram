@@ -1,3 +1,4 @@
+import { MouseEvent } from 'react';
 import { Cell, CellStatus } from 'types/nonogram';
 import { useNonogramStore } from 'lib/stores';
 
@@ -8,7 +9,7 @@ type CellProps = {
 };
 
 const Cell = ({ row, column, cell }: CellProps) => {
-  const { paintCell } = useNonogramStore();
+  const { isDragging, startDragging, paintCellByElement } = useNonogramStore();
 
   return (
     <>
@@ -55,7 +56,16 @@ const Cell = ({ row, column, cell }: CellProps) => {
             ? ' marked'
             : '')
         }
-        onClick={() => paintCell(row, column)}
+        data-row={row}
+        data-column={column}
+        onMouseDown={(e) => {
+          startDragging();
+          paintCellByElement(e.currentTarget);
+        }}
+        onMouseEnter={(e) => {
+          if (!isDragging) return;
+          paintCellByElement(e.currentTarget);
+        }}
       >
         {cell[1] === CellStatus.Marked ? '✕' : ''}
       </button>

@@ -3,7 +3,7 @@ import Cell from 'components/Cell';
 import { useNonogramStore } from 'lib/stores';
 
 const Grid = () => {
-  const { rows, columns, grid } = useNonogramStore();
+  const { rows, columns, grid, stopDragging } = useNonogramStore();
 
   return (
     <>
@@ -27,7 +27,7 @@ const Grid = () => {
         }
       `}</style>
 
-      <div id="grid">
+      <div id="grid" onMouseLeave={stopDragging} onMouseUp={stopDragging}>
         {grid.map((row, i) => row.map((cell, j) => <Cell key={'' + i + j} row={i} column={j} cell={cell} />))}
       </div>
     </>

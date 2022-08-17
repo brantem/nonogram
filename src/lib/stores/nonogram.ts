@@ -11,9 +11,14 @@ type NonogramState = {
   grid: Cell[][];
   histories: History[];
 
+  isDragging: Boolean;
+  startDragging: () => void;
+  stopDragging: () => void;
+
   setup: (rows: number, columns: number) => void;
   generate: () => void;
   paintCell: (row: number, column: number) => void;
+  paintCellByElement: (el: HTMLButtonElement) => void;
   undo: () => void;
   generateHints: (direction: Direction) => Hint[];
 
@@ -29,6 +34,10 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
 
   grid: [],
   histories: [],
+
+  isDragging: false,
+  startDragging: () => set({ isDragging: true }),
+  stopDragging: () => set({ isDragging: false }),
 
   setup: (rows, columns) => {
     const { generate } = get();
@@ -59,6 +68,13 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
     _autoFill(row, column);
 
     if (grid.every((row) => row.every(isCorrect))) setTimeout(generate, 500);
+  },
+  paintCellByElement: (el) => {
+    const { paintCell } = get();
+
+    const _row = parseInt(el.getAttribute('data-row') as string);
+    const _column = parseInt(el.getAttribute('data-column') as string);
+    paintCell(_row, _column);
   },
   undo: () => {
     const { grid, histories } = get();
