@@ -14,7 +14,7 @@ const Grid = () => {
           grid-template-columns: repeat(${columns}, var(--cell-size));
           gap: 1px;
           border: 1px solid black;
-          border-radius: 0.25rem;
+          border-radius: 0.25rem 0.25rem 0 0;
           overflow: hidden;
           background-color: black;
         }

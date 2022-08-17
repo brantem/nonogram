@@ -7,7 +7,7 @@ import Hints from 'components/Hints';
 import { useNonogramStore } from 'lib/stores';
 
 const Home: NextPage = () => {
-  const { rows, columns, setup, generate, undo } = useNonogramStore();
+  const { rows, columns, histories, setup, generate, undo } = useNonogramStore();
 
   useEffect(() => {
     generate();
@@ -27,14 +27,40 @@ const Home: NextPage = () => {
         }
 
         .bottom-container {
-          position: fixed;
-          bottom: 10vh;
           display: flex;
+          justify-content: space-between;
+          border: 1px solid black;
+          border-top-width: 0;
+          border-radius: 0 0 0.25rem 0.25rem;
         }
 
-        .undo-button,
-        .generate-button {
-          margin-left: 1rem;
+        @media (prefers-color-scheme: dark) {
+          .bottom-container {
+            border-color: white;
+          }
+        }
+
+        .bottom-container > * {
+          flex: 1 0 calc(100% / 3);
+          border: 0;
+          background: transparent;
+          text-align: center;
+          height: 2rem;
+        }
+
+        .bottom-container select {
+          -webkit-appearance: none;
+          appearance: none;
+        }
+
+        .bottom-container > * + * {
+          border-left: 1px solid black;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          .bottom-container > * + * {
+            border-color: white;
+          }
         }
       `}</style>
 
@@ -51,27 +77,29 @@ const Home: NextPage = () => {
           <Hints direction="vertical" />
           <Grid />
         </div>
-      </div>
 
-      <div className="bottom-container">
-        <select
-          value={rows + 'x' + columns}
-          onChange={(e) => {
-            const [_rows, _columns] = e.target.value.split('x');
-            setup(parseInt(_rows), parseInt(_columns));
-          }}
-        >
-          <option value="5x5">5x5</option>
-          <option value="6x6">6x6</option>
-          <option value="7x7">7x7</option>
-        </select>
+        <div className="bottom-container">
+          <select
+            value={rows + ' × ' + columns}
+            onChange={(e) => {
+              const [_rows, _columns] = e.target.value.split(' × ');
+              setup(parseInt(_rows), parseInt(_columns));
+            }}
+          >
+            <option value="4 × 4">4 × 4</option>
+            <option value="5 × 5">5 × 5</option>
+            <option value="6 × 6">6 × 6</option>
+            <option value="7 × 7">7 × 7</option>
+          </select>
 
-        <button className="undo-button" onClick={undo}>
-          Undo
-        </button>
-        <button className="generate-button" onClick={generate}>
-          Refresh
-        </button>
+          <button className="undo-button" onClick={undo} disabled={!histories.length}>
+            Undo
+          </button>
+
+          <button className="generate-button" onClick={generate}>
+            Refresh
+          </button>
+        </div>
       </div>
     </>
   );
