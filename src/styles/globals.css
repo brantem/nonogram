@@ -39,7 +39,7 @@ html {
 }
 
 body {
-  overscroll-behavior: contain; // disable pull to refresh
+  overscroll-behavior: contain; /* disable pull to refresh */
 }
 
 #__next {
