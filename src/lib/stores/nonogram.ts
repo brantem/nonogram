@@ -13,7 +13,7 @@ type NonogramState = {
 
   setup: (rows: number, columns: number) => void;
   generate: () => void;
-  handleCellClick: (row: number, column: number) => void;
+  paintCell: (row: number, column: number) => void;
   undo: () => void;
   generateHints: (direction: Direction) => Hint[];
 
@@ -50,7 +50,7 @@ export const useNonogramStore = create<NonogramState>()((set, get) => ({
     for (let i = 0; i < rows; i++) _autoFill(i, 0);
     for (let i = 0; i < columns; i++) _autoFill(0, i);
   },
-  handleCellClick: (row, column) => {
+  paintCell: (row, column) => {
     const { grid, histories, generate, _autoFill } = get();
     if (!!grid[row][column][1]) return;
 

@@ -18,14 +18,14 @@ const Hints = ({ direction }: HintsProps) => {
         }
 
         #hints.row {
-          grid-template-rows: repeat(${rows}, var(--grid-item-size));
+          grid-template-rows: repeat(${rows}, var(--cell-size));
           margin-right: 0.5rem;
           justify-items: end;
           right: 100%;
         }
 
         #hints.column {
-          grid-template-columns: repeat(${columns}, var(--grid-item-size));
+          grid-template-columns: repeat(${columns}, var(--cell-size));
           margin-bottom: 0.5rem;
           align-self: flex-end;
           align-items: end;
@@ -68,11 +68,11 @@ const Hints = ({ direction }: HintsProps) => {
         }
 
         #hints.row .hints-item-line {
-          width: calc(var(--grid-item-size) - var(--grid-item-size) / 2);
+          width: calc(var(--cell-size) - var(--cell-size) / 2);
         }
 
         #hints.column .hints-item-line {
-          height: calc(var(--grid-item-size) - var(--grid-item-size) / 3);
+          height: calc(var(--cell-size) - var(--cell-size) / 3);
         }
       `}</style>
 
