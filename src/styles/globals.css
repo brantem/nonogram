@@ -38,6 +38,10 @@ html {
   }
 }
 
+body {
+  overscroll-behavior: contain; // disable pull to refresh
+}
+
 #__next {
   display: flex;
   align-items: center;

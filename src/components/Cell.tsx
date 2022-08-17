@@ -9,7 +9,7 @@ type CellProps = {
 };
 
 const Cell = ({ row, column, cell }: CellProps) => {
-  const { isDragging, startDragging, paintCellByElement } = useNonogramStore();
+  const { isDragging, startDragging, paintCell, paintCellByElement } = useNonogramStore();
 
   return (
     <>
@@ -58,9 +58,13 @@ const Cell = ({ row, column, cell }: CellProps) => {
         }
         data-row={row}
         data-column={column}
-        onMouseDown={(e) => {
+        onMouseDown={() => {
           startDragging();
-          paintCellByElement(e.currentTarget);
+          paintCell(row, column);
+        }}
+        onTouchStart={() => {
+          startDragging();
+          paintCell(row, column);
         }}
         onMouseEnter={(e) => {
           if (!isDragging) return;

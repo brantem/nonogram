@@ -18,7 +18,7 @@ type NonogramState = {
   setup: (rows: number, columns: number) => void;
   generate: () => void;
   paintCell: (row: number, column: number) => void;
-  paintCellByElement: (el: HTMLButtonElement) => void;
+  paintCellByElement: (el: Element) => void;
   undo: () => void;
   generateHints: (direction: Direction) => Hint[];
 

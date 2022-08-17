@@ -3,7 +3,7 @@ import Cell from 'components/Cell';
 import { useNonogramStore } from 'lib/stores';
 
 const Grid = () => {
-  const { rows, columns, grid, stopDragging } = useNonogramStore();
+  const { rows, columns, grid, isDragging, stopDragging, paintCellByElement } = useNonogramStore();
 
   return (
     <>
@@ -27,7 +27,20 @@ const Grid = () => {
         }
       `}</style>
 
-      <div id="grid" onMouseLeave={stopDragging} onMouseUp={stopDragging}>
+      <div
+        id="grid"
+        onMouseLeave={stopDragging}
+        onMouseUp={stopDragging}
+        onTouchMove={(e) => {
+          if (!isDragging) return;
+          const { clientX, clientY } = e.touches[0];
+          const el = document.elementFromPoint(clientX, clientY);
+          if (!el || !el.classList.contains('cell')) return;
+          paintCellByElement(el);
+        }}
+        onTouchEnd={stopDragging}
+        onTouchCancel={stopDragging}
+      >
         {grid.map((row, i) => row.map((cell, j) => <Cell key={'' + i + j} row={i} column={j} cell={cell} />))}
       </div>
     </>
