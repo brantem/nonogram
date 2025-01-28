@@ -1,0 +1,60 @@
+import { useGridState } from 'lib/grid';
+
+export default function Board() {
+  const { grid, generate, paint } = useGridState();
+  const isComplete = grid.every((cells) => cells.every((cell) => cell.length == 2));
+
+  return (
+    <div className="relative col-span-3 row-span-3">
+      <div
+        className="grid aspect-square size-full grid-rows-5 divide-y rounded-md border-3 bg-white"
+        onTouchMove={(e) => {
+          const { clientX, clientY } = e.touches[0];
+          const el = document.elementFromPoint(clientX, clientY);
+          if (!el?.classList.contains('cell')) return;
+          paint(parseInt(el.getAttribute('data-x')!), parseInt(el.getAttribute('data-y')!));
+        }}
+      >
+        {grid.map((cells, y) => (
+          <div key={y} className="grid grid-cols-5 divide-x">
+            {cells.map((cell, x) => {
+              if (!cell[1]) {
+                return (
+                  <div key={x} className="cell cursor-pointer" data-x={x} data-y={y} onClick={() => paint(x, y)} />
+                );
+              }
+
+              return cell[0] === cell[1] ? (
+                <div key={x} className="p-1.5">
+                  <div className="size-full rounded bg-black dark:bg-white" />
+                </div>
+              ) : (
+                <div key={x} className="p-1.5">
+                  <div className="flex size-full items-center justify-center text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" className="size-3/4">
+                      <path
+                        d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      {isComplete && (
+        <div className="absolute inset-0 flex h-full w-full items-center justify-center rounded-md bg-white/75 dark:bg-black/75">
+          <button
+            className="rounded-full bg-neutral-700 px-6 py-1.5 text-lg text-white hover:bg-neutral-600 dark:bg-white dark:text-neutral-700 dark:hover:bg-neutral-200"
+            onClick={() => generate()}
+          >
+            New Board
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
