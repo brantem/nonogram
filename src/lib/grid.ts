@@ -6,13 +6,29 @@ import type { Cell } from 'types';
 
 const SIZE = 5;
 
-const generate = (size: number, fillProbability = 0.5) => {
-  const grid = [];
+const generate = (size: number) => {
+  const grid: Cell[][] = [];
+  const r = new Array(size).fill(true);
+  const c = new Array(size).fill(true);
+
   for (let y = 0; y < size; y++) {
-    const row: Cell[] = [];
-    for (let x = 0; x < size; x++) row.push([Math.random() < fillProbability ? 1 : 0]);
-    grid.push(row);
+    grid[y] = [];
+    for (let x = 0; x < size; x++) {
+      const value = Math.random() < 0.5 ? 1 : 0;
+      grid[y][x] = [value];
+
+      if (value !== 1) continue;
+      r[y] = false;
+      c[x] = false;
+    }
   }
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      if (r[y] || c[x]) grid[y][x][1] = 1;
+    }
+  }
+
   return grid;
 };
 
