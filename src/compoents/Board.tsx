@@ -7,7 +7,7 @@ export default function Board() {
   return (
     <div className="relative col-span-3 row-span-3">
       <div
-        className="grid aspect-square size-full grid-rows-5 divide-y rounded-md border-3 bg-white"
+        className="grid aspect-square size-full grid-rows-5 divide-y divide-neutral-500 rounded-md border-3 border-neutral-500 bg-white dark:bg-neutral-800"
         onTouchMove={(e) => {
           const { clientX, clientY } = e.touches[0];
           const el = document.elementFromPoint(clientX, clientY);
@@ -16,7 +16,7 @@ export default function Board() {
         }}
       >
         {grid.map((cells, y) => (
-          <div key={y} className="grid grid-cols-5 divide-x">
+          <div key={y} className="grid grid-cols-5 divide-x divide-neutral-500">
             {cells.map((cell, x) => {
               if (!cell[1]) {
                 return (
@@ -31,7 +31,7 @@ export default function Board() {
               ) : (
                 <div key={x} className="p-1.5">
                   <div className="flex size-full items-center justify-center text-red-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" className="size-3/4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" className="aspect-square">
                       <path
                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
                         fill="currentColor"
