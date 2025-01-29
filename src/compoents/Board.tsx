@@ -1,29 +1,47 @@
+import { useRef } from 'react';
+
 import { useGridState } from 'lib/grid';
 
 export default function Board() {
-  const { grid, generate, paint } = useGridState();
+  const { grid, generate, paint } = useGridState((state) => ({
+    grid: state.grid,
+    generate: state.generate,
+    paint(clientX: number, clientY: number) {
+      const el = document.elementFromPoint(clientX, clientY);
+      if (!el?.classList.contains('cell')) return;
+      state.paint(parseInt(el.getAttribute('data-x')!), parseInt(el.getAttribute('data-y')!));
+    },
+  }));
   const isComplete = grid.every((cells) => cells.every((cell) => cell.length == 2));
+
+  const isDragging = useRef(false);
 
   return (
     <div className="relative col-span-3 row-span-3">
       <div
         className="grid aspect-square size-full grid-rows-5 divide-y divide-neutral-500 rounded-md border-3 border-neutral-500 bg-white dark:bg-neutral-800"
-        onTouchMove={(e) => {
-          const { clientX, clientY } = e.touches[0];
-          const el = document.elementFromPoint(clientX, clientY);
-          if (!el?.classList.contains('cell')) return;
-          paint(parseInt(el.getAttribute('data-x')!), parseInt(el.getAttribute('data-y')!));
+        onPointerDown={(e) => {
+          if (e.button !== 0) return;
+          isDragging.current = true;
+          paint(e.clientX, e.clientY);
+        }}
+        onPointerUp={() => {
+          if (!isDragging.current) return;
+          isDragging.current = false;
+        }}
+        onPointerLeave={() => {
+          if (!isDragging.current) return;
+          isDragging.current = false;
+        }}
+        onPointerMove={(e) => {
+          if (!isDragging.current) return;
+          paint(e.clientX, e.clientY);
         }}
       >
         {grid.map((cells, y) => (
           <div key={y} className="grid grid-cols-5 divide-x divide-neutral-500">
             {cells.map((cell, x) => {
-              if (!cell[1]) {
-                return (
-                  <div key={x} className="cell cursor-pointer" data-x={x} data-y={y} onClick={() => paint(x, y)} />
-                );
-              }
-
+              if (!cell[1]) return <div key={x} className="cell cursor-pointer" data-x={x} data-y={y} />;
               return cell[0] === cell[1] ? (
                 <div key={x} className="p-1.5">
                   <div className="size-full rounded bg-black dark:bg-white" />

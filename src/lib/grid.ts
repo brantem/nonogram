@@ -52,6 +52,8 @@ export const useGridState = create<State>()(
       paint(x, y) {
         set((state) => {
           const cell = state.grid[y][x];
+          if (cell.length === 2) return;
+
           cell[1] = 1;
 
           // fill the remaining if the vertical line is complete
