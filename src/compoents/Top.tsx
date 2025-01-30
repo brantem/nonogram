@@ -1,11 +1,14 @@
+import Hint from './Hint';
+
+import type * as types from 'types';
 import { useGridState } from 'lib/grid';
 import { padStart } from 'lib/helpers';
 
-export default function TopHint() {
+export default function Top() {
   const hints = useGridState((state) => {
     const hints = [];
     for (let x = 0; x < state.width; x++) {
-      let arr = [];
+      let arr: types.Hint[] = [];
       let temp = 0;
       let match = 0;
       for (let y = 0; y < state.height; y++) {
@@ -25,22 +28,27 @@ export default function TopHint() {
     return hints.map((arr) => padStart(arr, max, [0]));
   });
 
+  const n = Math.ceil(hints.length / 5);
+
   return (
-    <div
-      className="grid grid-cols-[repeat(var(--width),var(--cell-size))] gap-px border-2 border-neutral-500"
-      style={{ '--rows': hints[0].length } as React.CSSProperties}
-    >
-      {hints.map((cells, i) => (
-        <div key={i} className="grid grid-rows-[repeat(var(--rows),var(--cell-size))] gap-px">
-          {cells.map((cell, i) =>
-            cell[0] ? (
-              <div key={i} className="flex items-center justify-center bg-white dark:bg-neutral-800">
-                <span className={cell[1] ? 'opacity-50' : undefined}>{cell[0]}</span>
-              </div>
-            ) : (
-              <div key={i} className="bg-white dark:bg-neutral-800" />
-            ),
-          )}
+    <div className="flex divide-x-[3px] divide-neutral-500 border-[2px] border-neutral-500">
+      {[...new Array(n)].map((_, i) => {
+        const start = i * 5;
+        const end = start + 5;
+        return <Hints key={i} hints={hints.slice(start, end)} />;
+      })}
+    </div>
+  );
+}
+
+function Hints({ hints }: { hints: types.Hint[][] }) {
+  return (
+    <div className="flex divide-x divide-neutral-500">
+      {hints.map((hints, i) => (
+        <div key={i} className="flex flex-col divide-y divide-neutral-500">
+          {hints.map((hint, i) => (
+            <Hint key={i} hint={hint} />
+          ))}
         </div>
       ))}
     </div>
