@@ -4,16 +4,17 @@ import { immer } from 'zustand/middleware/immer';
 
 import type { Cell } from 'types';
 
-const SIZE = 5;
+const WIDTH = 10;
+const HEIGHT = 10;
 
-const generate = (size: number) => {
+const generate = (width: number, height: number) => {
   const grid: Cell[][] = [];
-  const r = new Array(size).fill(true);
-  const c = new Array(size).fill(true);
+  const r = new Array(height).fill(true);
+  const c = new Array(width).fill(true);
 
-  for (let y = 0; y < size; y++) {
+  for (let y = 0; y < height; y++) {
     grid[y] = [];
-    for (let x = 0; x < size; x++) {
+    for (let x = 0; x < width; x++) {
       const value = Math.random() < 0.5 ? 1 : 0;
       grid[y][x] = [value];
 
@@ -23,9 +24,9 @@ const generate = (size: number) => {
     }
   }
 
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      if (r[y] || c[x]) grid[y][x][1] = 1;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (r[y] || c[x]) grid[y][x][1] = 0;
     }
   }
 
@@ -33,40 +34,46 @@ const generate = (size: number) => {
 };
 
 type State = {
-  size: number;
+  width: number;
+  height: number;
   grid: Cell[][];
 
   generate(): void;
-  paint(x: number, y: number): void;
+  paint(x: number, y: number, v: Cell[1]): void;
 };
 
 export const useGridState = create<State>()(
   devtools(
     immer((set) => ({
-      size: SIZE,
-      grid: generate(SIZE),
+      width: WIDTH,
+      height: HEIGHT,
+      grid: generate(WIDTH, HEIGHT),
 
       generate() {
-        set((state) => ({ grid: generate(state.size) }));
+        set((state) => ({ grid: generate(state.width, state.height) }));
       },
-      paint(x, y) {
+      paint(x, y, v) {
         set((state) => {
           const cell = state.grid[y][x];
-          if (cell.length === 2) return;
-
-          cell[1] = 1;
+          cell[1] = v;
 
           // fill the remaining if the vertical line is complete
-          if (state.grid.every((cells) => (cells[x][0] ? cells[x][1] : true))) {
-            state.grid.forEach((cells) => (cells[x][1] = 1));
+          if (state.grid.every((cells) => isCellComplete(cells[x]))) {
+            state.grid.forEach((cells) => (cells[x][0] ? null : (cells[x][1] = 0)));
           }
 
           // fill the remaining if the horizontal line is complete
-          if (state.grid[y].every((cell) => (cell[0] ? cell[1] : true))) {
-            state.grid[y].forEach((cell) => (cell[1] = 1));
+          if (state.grid[y].every(isCellComplete)) {
+            state.grid[y].forEach((cell) => (cell[0] ? null : (cell[1] = 0)));
           }
         });
       },
     })),
   ),
 );
+
+const isCellComplete = (cell: Cell) => {
+  if (!cell[0]) return cell[1] === undefined || !cell[1]; // if 0, either empty or filled with 0
+  if (cell[0]) return cell[1]; // if 1, it must be filled with 1
+  return true; // if 1 but empty, if 0 but filled with 1 and if 1 but filled with 0
+};

@@ -1,61 +1,79 @@
 import { useRef } from 'react';
 
+import type { Cell } from 'types';
+import { cn } from 'lib/helpers';
 import { useGridState } from 'lib/grid';
 
 export default function Board() {
   const { grid, generate, paint } = useGridState((state) => ({
     grid: state.grid,
     generate: state.generate,
-    paint(clientX: number, clientY: number) {
-      const el = document.elementFromPoint(clientX, clientY);
-      if (!el?.classList.contains('cell')) return;
-      state.paint(parseInt(el.getAttribute('data-x')!), parseInt(el.getAttribute('data-y')!));
+    paint(clientX: number, clientY: number, v: -1 | Cell[1]) {
+      if (v === -1) return;
+      const el = document.elementsFromPoint(clientX, clientY).find((el) => el.classList.contains('cell'));
+      if (!el) return;
+      state.paint(parseInt(el.getAttribute('data-x')!), parseInt(el.getAttribute('data-y')!), v);
     },
   }));
-  const isComplete = grid.every((cells) => cells.every((cell) => cell.length == 2));
+  const isComplete = grid.every((cells) => cells.every((cell) => cell[0] === cell[1]));
 
-  const isDragging = useRef(false);
+  const isDraggingRef = useRef(false);
+  const buttonRef = useRef(-1);
 
   return (
-    <div className="relative col-span-3 row-span-3">
+    <div className="relative border-2 border-neutral-500" onContextMenu={(e) => e.preventDefault()}>
       <div
-        className="grid aspect-square size-full grid-rows-5 divide-y divide-neutral-500 rounded-md border-3 border-neutral-500 bg-white dark:bg-neutral-800"
+        className="grid size-full grid-rows-[repeat(var(--height),var(--cell-size))] gap-px"
         onPointerDown={(e) => {
-          if (e.button !== 0) return;
-          isDragging.current = true;
-          paint(e.clientX, e.clientY);
+          if (!(e.button === 0 || e.button === 2)) return;
+          isDraggingRef.current = true;
+          buttonRef.current = e.button;
+          paint(e.clientX, e.clientY, buttonToValue(e.button));
         }}
         onPointerUp={() => {
-          if (!isDragging.current) return;
-          isDragging.current = false;
+          if (!isDraggingRef.current) return;
+          isDraggingRef.current = false;
+          buttonRef.current = -1;
         }}
         onPointerLeave={() => {
-          if (!isDragging.current) return;
-          isDragging.current = false;
+          if (!isDraggingRef.current) return;
+          isDraggingRef.current = false;
+          buttonRef.current = -1;
         }}
         onPointerMove={(e) => {
-          if (!isDragging.current) return;
-          paint(e.clientX, e.clientY);
+          if (!isDraggingRef.current || buttonRef.current === -1) return;
+          paint(e.clientX, e.clientY, buttonToValue(buttonRef.current));
         }}
       >
         {grid.map((cells, y) => (
-          <div key={y} className="grid grid-cols-5 divide-x divide-neutral-500">
+          <div key={y} className="grid grid-cols-[repeat(var(--width),var(--cell-size))] gap-px">
             {cells.map((cell, x) => {
-              if (!cell[1]) return <div key={x} className="cell cursor-pointer" data-x={x} data-y={y} />;
-              return cell[0] === cell[1] ? (
-                <div key={x} className="p-1.5">
-                  <div className="size-full rounded bg-black dark:bg-white" />
-                </div>
-              ) : (
-                <div key={x} className="p-1.5">
-                  <div className="flex size-full items-center justify-center text-red-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" className="aspect-square">
-                      <path
-                        d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                        fill="currentColor"
+              const isMatch = cell[0] === cell[1];
+              return (
+                <div
+                  key={x}
+                  className="cell flex cursor-pointer items-center justify-center bg-white p-1 dark:bg-neutral-800"
+                  data-x={x}
+                  data-y={y}
+                >
+                  {cell.length === 2 ? (
+                    cell[1] ? (
+                      <div
+                        className={cn('size-full rounded', isMatch ? 'bg-black dark:bg-neutral-300' : 'bg-red-500')}
                       />
-                    </svg>
-                  </div>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 384 512"
+                        className={cn('aspect-square', !isMatch && 'text-red-500')}
+                      >
+                        <path
+                          d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    )
+                  ) : null}
                 </div>
               );
             })}
@@ -75,4 +93,15 @@ export default function Board() {
       )}
     </div>
   );
+}
+
+function buttonToValue(button: number): -1 | Cell[1] {
+  switch (button) {
+    case 0:
+      return 1;
+    case 2:
+      return 0;
+    default:
+      return -1;
+  }
 }
