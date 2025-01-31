@@ -2,12 +2,12 @@ import Footer from 'compoents/Footer';
 import Top from 'compoents/Top';
 import Left from 'compoents/Left';
 import Board from 'compoents/Board';
-import { useGridState } from 'lib/grid';
+import { useNonogramState } from 'lib/nonogram';
 
 // TODO: widht, height, size
 
 function App() {
-  const { width, height, size } = useGridState((state) => ({
+  const { width, height, size } = useNonogramState((state) => ({
     width: state.width,
     height: state.height,
     size: state.size,

@@ -1,7 +1,7 @@
-import { useGridState } from 'lib/grid';
+import { useNonogramState } from 'lib/nonogram';
 
 export default function Footer() {
-  const generate = useGridState((state) => state.generate);
+  const generate = useNonogramState((state) => state.generate);
 
   return (
     <footer className="flex items-center justify-center text-sm">

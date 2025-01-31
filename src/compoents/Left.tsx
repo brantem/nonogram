@@ -2,10 +2,10 @@ import Hint from './Hint';
 
 import type * as types from 'types';
 import { padStart } from 'lib/helpers';
-import { useGridState } from 'lib/grid';
+import { useNonogramState } from 'lib/nonogram';
 
 export default function Left() {
-  const hints = useGridState((state) => {
+  const hints = useNonogramState((state) => {
     const hints = state.grid.map((cells) => {
       let arr: types.Hint[] = [];
       let temp = 0;

@@ -43,7 +43,7 @@ type State = {
   paint(x: number, y: number, v: types.Cell[1]): void;
 };
 
-export const useGridState = create<State>()(
+export const useNonogramState = create<State>()(
   devtools(
     immer((set) => ({
       width: WIDTH,

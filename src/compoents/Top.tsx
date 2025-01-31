@@ -1,11 +1,11 @@
 import Hint from './Hint';
 
 import type * as types from 'types';
-import { useGridState } from 'lib/grid';
+import { useNonogramState } from 'lib/nonogram';
 import { padStart } from 'lib/helpers';
 
 export default function Top() {
-  const hints = useGridState((state) => {
+  const hints = useNonogramState((state) => {
     const hints = [];
     for (let x = 0; x < state.width; x++) {
       let arr: types.Hint[] = [];

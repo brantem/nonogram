@@ -2,10 +2,10 @@ import { useRef } from 'react';
 
 import type * as types from 'types';
 import { cn } from 'lib/helpers';
-import { useGridState } from 'lib/grid';
+import { useNonogramState } from 'lib/nonogram';
 
 export default function Board() {
-  const { grid, generate, paint } = useGridState((state) => ({
+  const { grid, generate, paint } = useNonogramState((state) => ({
     grid: state.grid,
     generate: state.generate,
     paint(clientX: number, clientY: number, v: -1 | types.Cell[1]) {
