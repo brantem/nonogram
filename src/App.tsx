@@ -1,10 +1,9 @@
-import Footer from 'compoents/Footer';
-import Top from 'compoents/Top';
-import Left from 'compoents/Left';
-import Board from 'compoents/Board';
-import { useNonogramState } from 'lib/nonogram';
+import Footer from 'components/Footer';
+import Top from 'components/Top';
+import Left from 'components/Left';
+import Board from 'components/Board';
 
-// TODO: widht, height, size
+import { useNonogramState } from 'lib/nonogram';
 
 function App() {
   const { width, height, size } = useNonogramState((state) => ({
