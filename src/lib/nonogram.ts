@@ -77,7 +77,7 @@ export const useNonogramState = create<State>()(
 );
 
 const isCellComplete = (cell: types.Cell) => {
-  if (!cell[0]) return cell[1] === undefined || !cell[1]; // if 0, either empty or filled with 0
-  if (cell[0]) return cell[1]; // if 1, it must be filled with 1
+  if (cell[0] === 0) return cell[1] === -1 || cell[1] === 0; // if 0, either empty or filled with 0
+  if (cell[0] === 1) return cell[1] === 1; // if 1, it must be filled with 1
   return true; // if 1 but empty, if 0 but filled with 1 and if 1 but filled with 0
 };
