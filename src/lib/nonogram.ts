@@ -4,8 +4,8 @@ import { immer } from 'zustand/middleware/immer';
 
 import type * as types from 'types';
 
-const WIDTH = 14;
-const HEIGHT = 16;
+const WIDTH = 30;
+const HEIGHT = 30;
 
 const generate = (width: number, height: number) => {
   const grid: types.Cell[][] = [];

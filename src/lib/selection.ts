@@ -4,6 +4,7 @@ import { devtools } from 'zustand/middleware';
 import type * as types from 'types';
 
 type State = {
+  active: boolean;
   value: types.Cell[1];
   coords: [] | [types.Coord, types.Coord?];
 
@@ -15,14 +16,18 @@ type State = {
 export const useSelectionState = create<State>()(
   devtools(
     (set, get) => ({
+      active: false,
       value: -1,
       coords: [],
 
       start(value, coord) {
-        set({ value, coords: [coord] });
+        set({ active: true, value, coords: [coord] });
       },
       move(coord) {
-        const [start, end] = get().coords;
+        const { active, coords } = get();
+        if (!active) return;
+
+        const [start, end] = coords;
         if (!start) return;
 
         const [x1, y1] = start;
@@ -48,7 +53,8 @@ export const useSelectionState = create<State>()(
         set({ coords: [start, coord] });
       },
       end() {
-        set({ value: -1, coords: [] });
+        if (!get().active) return;
+        set({ active: false, value: -1, coords: [] });
       },
     }),
     { name: 'selection' },

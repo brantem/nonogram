@@ -26,7 +26,7 @@ export default function Board() {
       {isComplete && (
         <div className="absolute inset-0 flex h-full w-full items-center justify-center rounded-md bg-white/75 dark:bg-black/75">
           <button
-            className="rounded-full bg-neutral-700 px-6 py-1.5 text-lg text-white hover:bg-neutral-600 dark:bg-white dark:text-neutral-700 dark:hover:bg-neutral-200"
+            className="rounded-full bg-neutral-700 px-6 py-1.5 text-lg text-white hover:bg-neutral-600 dark:bg-white dark:hover:bg-neutral-200"
             onClick={nonogram.generate}
           >
             New Board
@@ -46,7 +46,7 @@ enum Direction {
 
 function Selection() {
   const [style, direction, distance] = useSelectionState((state) => {
-    if (!state.coords.length) return [null, Direction.LR, 0];
+    if (!state.active || !state.coords.length) return [null, Direction.LR, 0];
 
     const [[x1, y1], end, direction] = (() => {
       const [start, end] = state.coords;
@@ -96,16 +96,10 @@ function Selection() {
       style={style}
     >
       {distance > 1 ? (
-        <div
-          className={cn(
-            'size-(--cell-size) p-1',
-            isHorizontal && (isFirstRow ? 'mt-(--cell-size)' : '-mt-(--cell-size)'),
-            isVertical && '-mr-(--cell-size)',
-          )}
-        >
+        <div className={cn('size-9 p-1', isHorizontal && (isFirstRow ? 'mt-9' : '-mt-9'), isVertical && '-mr-9')}>
           <div
             className={cn(
-              'flex size-full items-center justify-center rounded border-2 border-black bg-white text-base leading-none text-black',
+              'flex size-full items-center justify-center rounded border-2 border-black bg-white text-base leading-none',
             )}
           >
             {distance}
@@ -130,7 +124,7 @@ function Rows({ _y, rows, isLast }: { _y: number; rows: types.Cell[][]; isLast: 
                 <div key={j} className="relative">
                   <Cells _x={start} _y={_y + i} cells={cells} />
 
-                  <span className="absolute top-[calc(100%+var(--spacing)*2)] right-0 text-base leading-none text-black">
+                  <span className="absolute top-[calc(100%+var(--spacing)*2)] right-0 text-base leading-none">
                     {start + cells.length}
                   </span>
                 </div>
@@ -142,7 +136,7 @@ function Rows({ _y, rows, isLast }: { _y: number; rows: types.Cell[][]; isLast: 
         ))}
       </div>
 
-      <span className="absolute bottom-0 left-[calc(100%+var(--spacing)*2)] text-base leading-none text-black">
+      <span className="absolute bottom-0 left-[calc(100%+var(--spacing)*2)] text-base leading-none">
         {_y + rows.length}
       </span>
     </div>
@@ -174,7 +168,7 @@ function Cell({ x, y, cell }: { x: number; y: number; cell: types.Cell }) {
 
   return (
     <div
-      className="cell box-content flex size-[calc(var(--cell-size)-var(--spacing)*2)] cursor-pointer items-center justify-center bg-white p-1 dark:bg-neutral-800"
+      className="cell flex size-(--cell-size) cursor-pointer items-center justify-center bg-white dark:bg-neutral-800"
       data-c={`${x}.${y}`}
       onPointerDown={(e) => {
         let v = buttonToValue(e.button);
@@ -197,7 +191,7 @@ function Cell({ x, y, cell }: { x: number; y: number; cell: types.Cell }) {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 384 512"
-                className={cn('aspect-square', isMatch ? 'text-black' : 'text-rose-500')}
+                className={cn('aspect-square', !isMatch && 'text-rose-500')}
               >
                 <path
                   d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
@@ -206,9 +200,7 @@ function Cell({ x, y, cell }: { x: number; y: number; cell: types.Cell }) {
               </svg>
             );
           case 1:
-            return (
-              <div className={cn('size-full rounded', isMatch ? 'bg-black dark:bg-neutral-300' : 'bg-rose-500')} />
-            );
+            return <div className={cn('size-full', isMatch ? 'bg-black dark:bg-neutral-300' : 'bg-rose-500')} />;
           default:
             return;
         }
