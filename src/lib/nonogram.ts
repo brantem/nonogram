@@ -16,7 +16,7 @@ const generate = (width: number, height: number) => {
     grid[y] = [];
     for (let x = 0; x < width; x++) {
       const value = Math.random() < 0.5 ? 1 : 0;
-      grid[y][x] = [value];
+      grid[y][x] = [value, -1];
 
       if (value !== 1) continue;
       r[y] = false;
@@ -40,7 +40,7 @@ type State = {
   grid: types.Cell[][];
 
   generate(): void;
-  paint(x: number, y: number, v: types.Cell[1]): void;
+  paint(coord: types.Coord, v: types.Cell[1]): void;
 };
 
 export const useNonogramState = create<State>()(
@@ -48,13 +48,14 @@ export const useNonogramState = create<State>()(
     immer((set) => ({
       width: WIDTH,
       height: HEIGHT,
-      size: 48,
+      size: 36,
       grid: generate(WIDTH, HEIGHT),
 
       generate() {
         set((state) => ({ grid: generate(state.width, state.height) }));
       },
-      paint(x, y, v) {
+      paint(coord, v) {
+        const [x, y] = coord;
         set((state) => {
           const cell = state.grid[y][x];
           cell[1] = v;
@@ -71,6 +72,7 @@ export const useNonogramState = create<State>()(
         });
       },
     })),
+    { name: 'nonogram' },
   ),
 );
 
