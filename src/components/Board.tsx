@@ -144,15 +144,9 @@ function Cell({ x, y }: { x: number; y: number }) {
         let v = buttonToValue(e.button);
         if (v === -1) return;
         if (v === cell[1]) v = -1;
-
-        selection.start(v, coord);
-        nonogram.paint(coord, v);
+        selection.start(coord, v);
       }}
-      onPointerEnter={() => {
-        if (!selection.data.coords.length) return;
-        selection.move(coord);
-        nonogram.paint(coord, selection.data.value);
-      }}
+      onPointerEnter={() => selection.move(coord)}
     >
       {(() => {
         switch (cell[1]) {

@@ -87,14 +87,38 @@ export function paint(coord: types.Coord, v: types.Cell[1]) {
   const [x, y] = coord;
   grid[y][x][1] = v;
 
+  autoFill('vertical', x);
+  autoFill('horizontal', y);
+}
+
+export function paintMultiple(coord1: types.Coord, coord2: types.Coord, v: types.Cell[1]) {
+  const [x1, y1] = coord1;
+  const [x2, y2] = coord2;
+
+  const dx = Math.abs(x2 - x1);
+  const dy = Math.abs(y2 - y1);
+  const sx = Math.sign(x2 - x1); // x2 > x1 = right, x2 < x1 = left
+  const sy = Math.sign(y2 - y1); // y2 > y1 = down, y2 < y1 = up
+
+  for (let i = 0; i <= dy; i++) {
+    for (let j = 0; j <= dx; j++) {
+      grid[y1 + i * sy][x1 + j * sx][1] = v;
+    }
+  }
+
+  for (let i = 0; i <= dx; i++) autoFill('vertical', x1 + i * sx);
+  for (let i = 0; i <= dy; i++) autoFill('horizontal', y1 + i * sy);
+}
+
+function autoFill(orientation: 'horizontal' | 'vertical', i: number) {
   // fill the remaining if the vertical line is complete
-  if (grid.every((cells) => isCellComplete(cells[x]))) {
-    grid.forEach((cells) => (cells[x][0] ? null : (cells[x][1] = 0)));
+  if (orientation === 'vertical' && grid.every((cells) => isCellComplete(cells[i]))) {
+    grid.forEach((cells) => (cells[i][0] ? null : (cells[i][1] = 0)));
   }
 
   // fill the remaining if the horizontal line is complete
-  if (grid[y].every(isCellComplete)) {
-    grid[y].forEach((cell) => (cell[0] ? null : (cell[1] = 0)));
+  if (orientation === 'horizontal' && grid[i].every(isCellComplete)) {
+    grid[i].forEach((cell) => (cell[0] ? null : (cell[1] = 0)));
   }
 }
 

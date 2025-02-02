@@ -1,5 +1,7 @@
+import { proxy, subscribe } from 'valtio';
+
 import type * as types from 'types';
-import { proxy } from 'valtio';
+import * as nonogram from './nonogram';
 
 type Data = {
   value: types.Cell[1];
@@ -7,14 +9,18 @@ type Data = {
 };
 
 export const data = proxy<Data>({ value: -1, coords: [] });
+subscribe(data, () => {
+  if (data.coords.length !== 2) return;
+  nonogram.paintMultiple(data.coords[0], data.coords[1], data.value);
+});
 
-export function start(value: types.Cell[1], coord: types.Coord) {
+export function start(coord: types.Coord, value: types.Cell[1]) {
   data.value = value;
-  data.coords = [coord];
+  data.coords = [coord, coord];
 }
 
 export function move(coord: types.Coord) {
-  if (!data.coords) return;
+  if (!data.coords.length) return;
 
   const [start, end] = data.coords;
   if (!start) return;
@@ -29,31 +35,21 @@ export function move(coord: types.Coord) {
 
   const [x2, y2] = end;
 
-  const isVertical = x1 === x2;
   const isHorizontal = y1 === y2;
-  const isNewVertical = x2 === x3;
+  const isVertical = x1 === x2;
   const isNewHorizontal = y2 === y3;
+  const isNewVertical = x2 === x3;
 
-  const isVerticalToHorizontal = isVertical && !isNewVertical && isNewHorizontal; // the last check is needed to not catch the diagonal
   const isHorizontalToVertical = isHorizontal && !isNewHorizontal && isNewVertical; // the last check is needed to not catch the diagonal
-
-  // start from the previous line end
-  if (isVerticalToHorizontal || isHorizontalToVertical) {
-    data.coords.splice(0);
-    return data.coords.push(end, coord);
-  }
-
-  // diagonal
-  if (x1 !== x3 && y1 !== y3) {
-    data.coords.splice(0);
-    return data.coords.push(coord);
-  }
+  const isVerticalToHorizontal = isVertical && !isNewVertical && isNewHorizontal; // the last check is needed to not catch the diagonal
 
   data.coords[1] = coord;
+  if (x1 !== x3 && y1 !== y3) data.coords[0] = coord; // diagonal
+  if (isHorizontalToVertical || isVerticalToHorizontal) data.coords[0] = end; // start from the previous line end
 }
 
 export function end() {
   if (!data.coords.length) return;
   data.value = -1;
-  data.coords = [];
+  data.coords.splice(0);
 }
