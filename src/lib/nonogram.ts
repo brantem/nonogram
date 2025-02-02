@@ -30,7 +30,13 @@ function _generate(width: number, height: number) {
   return grid;
 }
 
-export const settings = proxy({ width: 50, height: 50, size: 24 });
+export const settings = proxy({
+  width: 50,
+  height: 50,
+  cell: {
+    size: 24,
+  },
+});
 export const grid = proxy<types.Cell[][]>(_generate(settings.width, settings.height));
 export const hints = derive({
   top: (get) => {
