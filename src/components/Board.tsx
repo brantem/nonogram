@@ -1,38 +1,33 @@
 import { Fragment } from 'react';
+import { useSnapshot } from 'valtio';
 
 import type * as types from 'types';
-import { cn } from 'lib/helpers';
-import { useNonogramState } from 'lib/nonogram';
-import { useSelectionState } from 'lib/selection';
+import { generateGroups, cn, buttonToValue } from 'lib/helpers';
+import * as nonogram from 'lib/nonogram';
+import * as selection from 'lib/selection';
 
 export default function Board() {
-  const nonogram = useNonogramState((state) => ({ grid: state.grid, generate: state.generate }));
-  const isComplete = nonogram.grid.every((cells) => cells.every((cell) => cell[0] === cell[1]));
-
-  const groups = Math.ceil(nonogram.grid.length / 5);
+  const groups = generateGroups(nonogram.settings.height, 5);
 
   return (
     <div id="board" className="relative border-[2px] border-neutral-500" onContextMenu={(e) => e.preventDefault()}>
       <Selection />
 
       <div className="flex flex-col divide-y-[3px] divide-neutral-500">
-        {[...new Array(groups)].map((_, i) => {
-          const start = i * 5;
-          const end = start + 5;
-          return <Rows key={i} _y={start} rows={nonogram.grid.slice(start, end)} isLast={i === groups - 1} />;
-        })}
-      </div>
+        {groups.map((group, i) => (
+          <div key={i} className="relative">
+            <div className="flex flex-col divide-y divide-neutral-500">
+              {[...new Array(group)].map((_, j) => (
+                <Row key={j} y={i * 5 + j} isLast={i === groups.length - 1 && j === group - 1} />
+              ))}
+            </div>
 
-      {isComplete && (
-        <div className="absolute inset-0 flex h-full w-full items-center justify-center rounded-md bg-white/75 dark:bg-black/75">
-          <button
-            className="rounded-full bg-neutral-700 px-6 py-1.5 text-lg text-white hover:bg-neutral-600 dark:bg-white dark:hover:bg-neutral-200"
-            onClick={nonogram.generate}
-          >
-            New Board
-          </button>
-        </div>
-      )}
+            <span className="absolute bottom-0 left-[calc(100%+var(--spacing)*2)] text-base leading-none">
+              {i * 5 + group}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -45,44 +40,32 @@ enum Direction {
 }
 
 function Selection() {
-  const [style, direction, distance] = useSelectionState((state) => {
-    if (!state.active || !state.coords.length) return [null, Direction.LR, 0];
+  const data = useSnapshot(selection.data);
+  if (!data.coords.length) return;
 
-    const [[x1, y1], end, direction] = (() => {
-      const [start, end] = state.coords;
-      const [x1, y1] = start;
+  const [[x1, y1], end, direction] = (() => {
+    const [start, end] = data.coords;
+    const [x1, y1] = start;
 
-      if (!end) return [start, null, Direction.LR];
+    if (!end) return [start, null, Direction.LR];
 
-      const [x2, y2] = end;
+    const [x2, y2] = end;
 
-      if (x1 > x2) return [end, start, Direction.RL]; // right-left -> left-right
-      if (x1 === x2 && y1 > y2) return [end, start, Direction.BT]; // bottom-top -> top-bottom
-      return [start, end, x1 === x2 ? Direction.TB : Direction.LR];
-    })();
-    const [x2, y2] = end || [0, 0];
+    if (x1 > x2) return [end, start, Direction.RL]; // right-left -> left-right
+    if (x1 === x2 && y1 > y2) return [end, start, Direction.BT]; // bottom-top -> top-bottom
+    return [start, end, x1 === x2 ? Direction.TB : Direction.LR];
+  })();
+  const [x2, y2] = end || [0, 0];
 
-    const board = document.getElementById('board')?.getBoundingClientRect();
-    if (!board) return [null, Direction.LR, 0];
+  const board = document.getElementById('board')?.getBoundingClientRect();
+  if (!board) return;
 
-    const cell1 = document.querySelector(`[data-c="${x1}.${y1}"]`)?.getBoundingClientRect();
-    const cell2 = end ? document.querySelector(`[data-c="${x2}.${y2}"]`)?.getBoundingClientRect() : cell1;
-    if (!cell1 || !cell2) return [null, Direction.LR, 0];
+  const cell1 = document.querySelector(`[data-c="${x1}.${y1}"]`)?.getBoundingClientRect();
+  const cell2 = end ? document.querySelector(`[data-c="${x2}.${y2}"]`)?.getBoundingClientRect() : cell1;
+  if (!cell1 || !cell2) return;
 
-    return [
-      {
-        top: cell1.top - board.top - /* <Board /> border */ 2 - /* <Selection /> border */ 5,
-        left: cell1.left - board.left - /* <Board /> border */ 2 - /* <Selection /> border */ 5,
-        height: cell2.bottom - cell1.top + 10 /* <Selection /> border * 2 */,
-        width: cell2.right - cell1.left + 10 /* <Selection /> border * 2 */,
-      },
-      direction,
-      (end ? Math.abs(x2 - x1) /* x */ || Math.abs(y2 - y1) /* y */ : 0) + 1,
-    ];
-  });
-  if (!style) return;
-
-  const isFirstRow = style.top === -5;
+  const distance = (end ? Math.abs(x2 - x1) /* x */ || Math.abs(y2 - y1) /* y */ : 0) + 1;
+  const isFirstRow = cell1.top - board.top - 2 /* <Board /> border */ === 0;
   const isHorizontal = direction === Direction.LR || direction === Direction.RL;
   const isVertical = direction === Direction.TB || direction === Direction.BT;
 
@@ -93,7 +76,12 @@ function Selection() {
         direction !== Direction.RL && 'justify-end',
         direction === Direction.TB && 'items-end',
       )}
-      style={style}
+      style={{
+        top: cell1.top - board.top - /* <Board /> border */ 2 - /* <Selection /> border */ 5,
+        left: cell1.left - board.left - /* <Board /> border */ 2 - /* <Selection /> border */ 5,
+        height: cell2.bottom - cell1.top + 10 /* <Selection /> border * 2 */,
+        width: cell2.right - cell1.left + 10 /* <Selection /> border * 2 */,
+      }}
     >
       {distance > 1 ? (
         <div className={cn('size-9 p-1', isHorizontal && (isFirstRow ? 'mt-9' : '-mt-9'), isVertical && '-mr-9')}>
@@ -110,65 +98,47 @@ function Selection() {
   );
 }
 
-function Rows({ _y, rows, isLast }: { _y: number; rows: types.Cell[][]; isLast: boolean }) {
+function Row({ y, isLast }: { y: number; isLast: boolean }) {
+  const groups = generateGroups(nonogram.settings.width, 5);
+
   return (
-    <div className="relative">
-      <div className="flex flex-col divide-y divide-neutral-500">
-        {rows.map((row, i) => (
-          <div key={i} className="flex divide-x-[3px] divide-neutral-500">
-            {[...new Array(Math.ceil(row.length / 5))].map((_, j) => {
-              const start = j * 5;
-              const end = start + 5;
-              const cells = row.slice(start, end);
-              return isLast ? (
-                <div key={j} className="relative">
-                  <Cells _x={start} _y={_y + i} cells={cells} />
-
-                  <span className="absolute top-[calc(100%+var(--spacing)*2)] right-0 text-base leading-none">
-                    {start + cells.length}
-                  </span>
-                </div>
-              ) : (
-                <Cells key={j} _x={start} _y={_y + i} cells={cells} />
-              );
-            })}
-          </div>
-        ))}
-      </div>
-
-      <span className="absolute bottom-0 left-[calc(100%+var(--spacing)*2)] text-base leading-none">
-        {_y + rows.length}
-      </span>
-    </div>
-  );
-}
-
-function Cells({ _x, _y, cells }: { _x: number; _y: number; cells: types.Cell[] }) {
-  // can't use divide-x; it adds 1px to cell width
-  return (
-    <div className="flex items-stretch">
-      {cells.map((cell, i) => {
+    <div className="flex divide-x-[3px] divide-neutral-500">
+      {groups.map((group, i) => {
         return (
-          <Fragment key={i}>
-            <Cell x={_x + i} y={_y} cell={cell} />
-            {i !== cells.length - 1 && <div className="w-px bg-neutral-500" />}
-          </Fragment>
+          <div key={i} className="relative">
+            <div className="flex items-stretch">
+              {[...new Array(group)].map((_, j) => (
+                <Fragment key={j}>
+                  <Cell x={i * 5 + j} y={y} />
+
+                  {j < group - 1 && <div className="w-px bg-neutral-500" />}
+                </Fragment>
+              ))}
+            </div>
+
+            {isLast && (
+              <span className="absolute top-[calc(100%+var(--spacing)*2)] right-0 text-base leading-none">
+                {i * 5 + group}
+              </span>
+            )}
+          </div>
         );
       })}
     </div>
   );
 }
 
-function Cell({ x, y, cell }: { x: number; y: number; cell: types.Cell }) {
-  const selection = useSelectionState();
-  const paint = useNonogramState((state) => state.paint);
+function Cell({ x, y }: { x: number; y: number }) {
+  const cell = useSnapshot(nonogram.grid)[y][x];
 
   const coord = [x, y] satisfies types.Coord;
   const isMatch = cell[0] === cell[1];
 
+  // TODO: lock direction
+
   return (
     <div
-      className="cell flex size-(--cell-size) cursor-pointer items-center justify-center bg-white dark:bg-neutral-800"
+      className="cell flex size-(--cell-size) cursor-pointer items-center justify-center bg-white p-0.5 dark:bg-neutral-800"
       data-c={`${x}.${y}`}
       onPointerDown={(e) => {
         let v = buttonToValue(e.button);
@@ -176,12 +146,12 @@ function Cell({ x, y, cell }: { x: number; y: number; cell: types.Cell }) {
         if (v === cell[1]) v = -1;
 
         selection.start(v, coord);
-        paint(coord, v);
+        nonogram.paint(coord, v);
       }}
       onPointerEnter={() => {
-        if (!selection.coords.length) return;
+        if (!selection.data.coords.length) return;
         selection.move(coord);
-        paint(coord, selection.value);
+        nonogram.paint(coord, selection.data.value);
       }}
     >
       {(() => {
@@ -200,22 +170,13 @@ function Cell({ x, y, cell }: { x: number; y: number; cell: types.Cell }) {
               </svg>
             );
           case 1:
-            return <div className={cn('size-full', isMatch ? 'bg-black dark:bg-neutral-300' : 'bg-rose-500')} />;
+            return (
+              <div className={cn('size-full rounded', isMatch ? 'bg-black dark:bg-neutral-300' : 'bg-rose-500')} />
+            );
           default:
             return;
         }
       })()}
     </div>
   );
-}
-
-function buttonToValue(button: number): -1 | 0 | 1 {
-  switch (button) {
-    case 0:
-      return 1;
-    case 2:
-      return 0;
-    default:
-      return -1;
-  }
 }

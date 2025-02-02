@@ -1,51 +1,32 @@
+import { useSnapshot } from 'valtio';
+
 import Hint from './Hint';
 
-import type * as types from 'types';
-import { padStart } from 'lib/helpers';
-import { useNonogramState } from 'lib/nonogram';
+import { generateGroups } from 'lib/helpers';
+import * as nonogram from 'lib/nonogram';
 
 export default function Left() {
-  const hints = useNonogramState((state) => {
-    const hints = state.grid.map((cells) => {
-      let arr: types.Hint[] = [];
-      let temp = 0;
-      let match = 0;
-      cells.forEach((cell) => {
-        if (cell[0]) {
-          temp++;
-          if (cell[0] === cell[1]) match++;
-          return;
-        }
-        if (temp) arr.push([temp, temp === match ? 1 : 0]);
-        temp = match = 0;
-      });
-      if (temp) arr.push([temp, temp === match ? 1 : 0]);
-      return arr;
-    }, []);
-    const max = Math.max(...hints.map((arr) => arr.length));
-    return hints.map((arr) => padStart(arr, max, [0]));
-  });
+  const groups = generateGroups(nonogram.settings.height, 5);
 
   return (
     <div className="flex flex-col divide-y-[3px] divide-neutral-500 border-[2px] border-neutral-500">
-      {[...new Array(Math.ceil(hints.length / 5))].map((_, i) => {
-        const start = i * 5;
-        const end = start + 5;
-        return <Hints key={i} hints={hints.slice(start, end)} />;
-      })}
+      {groups.map((group, i) => (
+        <div key={i} className="flex flex-col divide-y divide-neutral-500">
+          {[...new Array(group)].map((_, j) => (
+            <Hints key={j} y={i * 5 + j} />
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
 
-function Hints({ hints }: { hints: types.Hint[][] }) {
+function Hints({ y }: { y: number }) {
+  const hints = useSnapshot(nonogram.hints).left[y];
   return (
-    <div className="flex flex-col divide-y divide-neutral-500">
-      {hints.map((hints, i) => (
-        <div key={i} className="flex divide-x divide-neutral-500">
-          {hints.map((hint, i) => (
-            <Hint key={i} hint={hint} />
-          ))}
-        </div>
+    <div className="flex divide-x divide-neutral-500">
+      {hints.map((hint, i) => (
+        <Hint key={i} hint={hint} />
       ))}
     </div>
   );

@@ -5,13 +5,10 @@ import Left from 'components/Left';
 import Board from 'components/Board';
 import Footer from 'components/Footer';
 
-import { useNonogramState } from 'lib/nonogram';
-import { useSelectionState } from 'lib/selection';
+import * as nonogram from 'lib/nonogram';
+import * as selection from 'lib/selection';
 
 function App() {
-  const selection = useSelectionState((state) => ({ end: state.end }));
-  const nonogram = useNonogramState((state) => ({ width: state.width, height: state.height, size: state.size }));
-
   useEffect(() => {
     document.addEventListener('pointerup', selection.end);
     return () => {
@@ -25,9 +22,9 @@ function App() {
         className="flex flex-col border-[3px] border-neutral-900 text-center text-2xl font-semibold tabular-nums select-none dark:border-white"
         style={
           {
-            '--width': nonogram.width,
-            '--height': nonogram.height,
-            '--cell-size': `${nonogram.size}px`,
+            '--width': nonogram.settings.width,
+            '--height': nonogram.settings.height,
+            '--cell-size': `${nonogram.settings.size}px`,
           } as React.CSSProperties
         }
       >

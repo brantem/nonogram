@@ -1,62 +1,59 @@
-import { createWithEqualityFn as create } from 'zustand/traditional';
-import { devtools } from 'zustand/middleware';
-
 import type * as types from 'types';
+import { proxy } from 'valtio';
 
-type State = {
-  active: boolean;
+type Data = {
   value: types.Cell[1];
-  coords: [] | [types.Coord, types.Coord?];
-
-  start(value: State['value'], coord: types.Coord): void;
-  move(coord: types.Coord): void;
-  end(): void;
+  coords: types.Coord[]; // TODO: [] | [types.Coord, types.Coord?]
 };
 
-export const useSelectionState = create<State>()(
-  devtools(
-    (set, get) => ({
-      active: false,
-      value: -1,
-      coords: [],
+export const data = proxy<Data>({ value: -1, coords: [] });
 
-      start(value, coord) {
-        set({ active: true, value, coords: [coord] });
-      },
-      move(coord) {
-        const { active, coords } = get();
-        if (!active) return;
+export function start(value: types.Cell[1], coord: types.Coord) {
+  data.value = value;
+  data.coords = [coord];
+}
 
-        const [start, end] = coords;
-        if (!start) return;
+export function move(coord: types.Coord) {
+  if (!data.coords) return;
 
-        const [x1, y1] = start;
-        const [x3, y3] = coord;
+  const [start, end] = data.coords;
+  if (!start) return;
 
-        if (!end) {
-          if (x1 !== x3 && y1 !== y3) return set({ coords: [coord] }); // diagonal
-          return set({ coords: [start, coord] });
-        }
+  const [x1, y1] = start;
+  const [x3, y3] = coord;
 
-        const [x2, y2] = end;
+  if (!end) {
+    if (x1 !== x3 && y1 !== y3) data.coords.splice(0); // diagonal
+    return data.coords.push(coord);
+  }
 
-        const isVertical = x1 === x2;
-        const isHorizontal = y1 === y2;
-        const isNewVertical = x2 === x3;
-        const isNewHorizontal = y2 === y3;
+  const [x2, y2] = end;
 
-        const isVerticalToHorizontal = isVertical && !isNewVertical && isNewHorizontal; // the last check is needed to not catch the diagonal
-        const isHorizontalToVertical = isHorizontal && !isNewHorizontal && isNewVertical; // the last check is needed to not catch the diagonal
+  const isVertical = x1 === x2;
+  const isHorizontal = y1 === y2;
+  const isNewVertical = x2 === x3;
+  const isNewHorizontal = y2 === y3;
 
-        if (isVerticalToHorizontal || isHorizontalToVertical) return set({ coords: [end, coord] }); // start from the previous line end
-        if (x1 !== x3 && y1 !== y3) return set({ coords: [coord] }); // diagonal
-        set({ coords: [start, coord] });
-      },
-      end() {
-        if (!get().active) return;
-        set({ active: false, value: -1, coords: [] });
-      },
-    }),
-    { name: 'selection' },
-  ),
-);
+  const isVerticalToHorizontal = isVertical && !isNewVertical && isNewHorizontal; // the last check is needed to not catch the diagonal
+  const isHorizontalToVertical = isHorizontal && !isNewHorizontal && isNewVertical; // the last check is needed to not catch the diagonal
+
+  // start from the previous line end
+  if (isVerticalToHorizontal || isHorizontalToVertical) {
+    data.coords.splice(0);
+    return data.coords.push(end, coord);
+  }
+
+  // diagonal
+  if (x1 !== x3 && y1 !== y3) {
+    data.coords.splice(0);
+    return data.coords.push(coord);
+  }
+
+  data.coords[1] = coord;
+}
+
+export function end() {
+  if (!data.coords.length) return;
+  data.value = -1;
+  data.coords = [];
+}
