@@ -5,13 +5,13 @@ import * as nonogram from './nonogram';
 
 type Data = {
   value: types.Cell[1];
-  coords: types.Coord[]; // TODO: [] | [types.Coord, types.Coord?]
+  coords: [] | [types.Coord, types.Coord];
 };
 
 export const data = proxy<Data>({ value: -1, coords: [] });
 subscribe(data, () => {
   if (data.coords.length !== 2) return;
-  nonogram.paintMultiple(data.coords[0], data.coords[1], data.value);
+  nonogram.paint(data.coords[0], data.coords[1], data.value);
 });
 
 export function start(coord: types.Coord, value: types.Cell[1]) {
