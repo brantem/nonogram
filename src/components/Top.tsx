@@ -2,8 +2,9 @@ import { useSnapshot } from 'valtio';
 
 import Hint from './Hint';
 
-import { generateGroups } from 'lib/helpers';
+import { generateGroups, cn } from 'lib/helpers';
 import * as nonogram from 'lib/nonogram';
+import * as highlight from 'lib/highlight';
 
 export default function Top() {
   const settings = useSnapshot(nonogram.settings);
@@ -24,8 +25,9 @@ export default function Top() {
 
 function Hints({ x }: { x: number }) {
   const hints = useSnapshot(nonogram.hints).top[x];
+  const isActive = useSnapshot(highlight.data).coord[x] === 0;
   return (
-    <div className="flex flex-col divide-y divide-neutral-500">
+    <div className={cn('flex flex-col divide-y divide-neutral-500', isActive && 'group is-active')}>
       {hints.map((hint, i) => (
         <Hint key={i} hint={hint} />
       ))}

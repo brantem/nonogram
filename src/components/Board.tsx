@@ -4,6 +4,7 @@ import { useSnapshot } from 'valtio';
 import type * as types from 'types';
 import { generateGroups, cn, buttonToValue } from 'lib/helpers';
 import * as nonogram from 'lib/nonogram';
+import * as highlight from 'lib/highlight';
 import * as selection from 'lib/selection';
 
 export default function Board() {
@@ -11,7 +12,12 @@ export default function Board() {
   const groups = generateGroups(settings.height, 5);
 
   return (
-    <div id="board" className="relative border-[2px] border-neutral-500" onContextMenu={(e) => e.preventDefault()}>
+    <div
+      id="board"
+      className="relative border-[2px] border-neutral-500"
+      onContextMenu={(e) => e.preventDefault()}
+      onPointerLeave={highlight.clear}
+    >
       <Selection />
 
       <div className="flex flex-col divide-y-[3px] divide-neutral-500">
@@ -140,7 +146,7 @@ function Cell({ x, y }: { x: number; y: number }) {
 
   return (
     <div
-      className="cell flex size-(--cell-size) cursor-pointer items-center justify-center bg-white p-0.5 dark:bg-neutral-800"
+      className="cell flex size-(--cell-size) cursor-pointer items-center justify-center bg-white dark:bg-black"
       data-c={`${x}.${y}`}
       onPointerDown={(e) => {
         let v = buttonToValue(e.button);
@@ -148,7 +154,10 @@ function Cell({ x, y }: { x: number; y: number }) {
         if (v === cell[1]) v = -1;
         selection.start(coord, v);
       }}
-      onPointerEnter={() => selection.move(coord)}
+      onPointerEnter={() => {
+        highlight.set(coord);
+        selection.move(coord);
+      }}
     >
       {(() => {
         switch (cell[1]) {
@@ -156,19 +165,17 @@ function Cell({ x, y }: { x: number; y: number }) {
             return (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 384 512"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={4}
+                stroke="currentColor"
                 className={cn('aspect-square', !isMatch && 'text-rose-500')}
               >
-                <path
-                  d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                  fill="currentColor"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
               </svg>
             );
           case 1:
-            return (
-              <div className={cn('size-full rounded', isMatch ? 'bg-black dark:bg-neutral-300' : 'bg-rose-500')} />
-            );
+            return <div className={cn('size-full', isMatch ? 'bg-black dark:bg-neutral-300' : 'bg-rose-500')} />;
           default:
             return;
         }
