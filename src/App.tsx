@@ -48,7 +48,7 @@ function Container({ children }: React.PropsWithChildren) {
 
   return (
     <div
-      className="flex w-fit items-end border-[3px] border-neutral-900 text-(length:--font-size) font-semibold tabular-nums select-none dark:border-neutral-700 dark:text-white"
+      className="flex w-fit items-end border-[3px] border-neutral-900 text-(length:--font-size) font-semibold select-none dark:border-neutral-700"
       style={
         {
           '--width': settings.width,
