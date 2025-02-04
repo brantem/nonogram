@@ -94,7 +94,7 @@ function Selection() {
         <div className={cn('size-9 p-1', isHorizontal && (isFirstRow ? 'mt-9' : '-mt-9'), isVertical && '-mr-9')}>
           <div
             className={cn(
-              'flex size-full items-center justify-center rounded border-2 border-black bg-white text-base leading-none',
+              'flex size-full items-center justify-center rounded border-2 border-black bg-white text-base leading-none dark:border-white dark:bg-black',
             )}
           >
             {distance}
