@@ -7,7 +7,8 @@ import * as nonogram from 'lib/nonogram';
 import * as selection from 'lib/selection';
 
 export default function Board() {
-  const groups = generateGroups(nonogram.settings.height, 5);
+  const settings = useSnapshot(nonogram.settings);
+  const groups = generateGroups(settings.height, 5);
 
   return (
     <div id="board" className="relative border-[2px] border-neutral-500" onContextMenu={(e) => e.preventDefault()}>
@@ -99,7 +100,8 @@ function Selection() {
 }
 
 function Row({ y, isLast }: { y: number; isLast: boolean }) {
-  const groups = generateGroups(nonogram.settings.width, 5);
+  const settings = useSnapshot(nonogram.settings);
+  const groups = generateGroups(settings.width, 5);
 
   return (
     <div className="flex divide-x-[3px] divide-neutral-500">
