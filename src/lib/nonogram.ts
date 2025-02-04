@@ -1,4 +1,5 @@
 import { proxy } from 'valtio';
+import { devtools } from 'valtio/utils';
 import { derive } from 'derive-valtio';
 
 import type * as types from 'types';
@@ -37,7 +38,11 @@ export const settings = proxy({
     size: 24,
   },
 });
+devtools(settings, { name: 'nonogram.settings' });
+
 export const grid = proxy<types.Cell[][]>(_generate(settings.width, settings.height));
+devtools(grid, { name: 'nonogram.grid' });
+
 export const hints = derive({
   top: (get) => {
     const _grid = get(grid);
@@ -84,8 +89,10 @@ export const hints = derive({
     return hints.map((arr) => padStart(arr, max, [0]));
   },
 });
+devtools(settings, { name: 'nonogram.settings' });
 
 export function generate() {
+  grid.splice(0);
   Object.assign(grid, _generate(settings.width, settings.height));
 }
 

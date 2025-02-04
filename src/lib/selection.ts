@@ -1,4 +1,5 @@
 import { proxy, subscribe } from 'valtio';
+import { devtools } from 'valtio/utils';
 
 import type * as types from 'types';
 import * as nonogram from './nonogram';
@@ -9,6 +10,8 @@ type Data = {
 };
 
 export const data = proxy<Data>({ value: -1, coords: [] });
+devtools(data, { name: 'selection.data' });
+
 subscribe(data, () => {
   if (data.coords.length !== 2) return;
   nonogram.paint(data.coords[0], data.coords[1], data.value);
