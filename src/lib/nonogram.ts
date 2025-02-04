@@ -1,4 +1,4 @@
-import { proxy } from 'valtio';
+import { proxy, subscribe } from 'valtio';
 import { devtools } from 'valtio/utils';
 import { derive } from 'derive-valtio';
 
@@ -31,17 +31,19 @@ function _generate(width: number, height: number) {
   return grid;
 }
 
-export const settings = proxy({
-  width: 50,
-  height: 50,
-  cell: {
-    size: 24,
-  },
-});
+if (!localStorage.getItem('settings')) {
+  localStorage.setItem('settings', JSON.stringify({ width: 30, height: 30, cell: { size: 24 } }));
+}
+export const settings = proxy(JSON.parse(localStorage.getItem('settings')!));
 devtools(settings, { name: 'nonogram.settings' });
+subscribe(settings, () => localStorage.setItem('settings', JSON.stringify(settings)));
 
-export const grid = proxy<types.Cell[][]>(_generate(settings.width, settings.height));
+if (!localStorage.getItem('grid')) {
+  localStorage.setItem('grid', JSON.stringify(_generate(settings.width, settings.height)));
+}
+export const grid = proxy<types.Cell[][]>(JSON.parse(localStorage.getItem('grid')!));
 devtools(grid, { name: 'nonogram.grid' });
+subscribe(grid, () => localStorage.setItem('grid', JSON.stringify(grid)));
 
 export const hints = derive({
   top: (get) => {
