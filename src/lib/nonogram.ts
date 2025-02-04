@@ -14,7 +14,7 @@ function _generate(width: number, height: number) {
     grid[y] = [];
     for (let x = 0; x < width; x++) {
       const value = Math.random() < 0.5 ? 1 : 0;
-      grid[y][x] = [value, -1];
+      grid[y][x] = [value];
 
       if (value !== 1) continue;
       r[y] = false;
@@ -130,7 +130,7 @@ function autoFill(orientation: 'horizontal' | 'vertical', i: number) {
 }
 
 function isCellComplete(cell: types.Cell) {
-  if (cell[0] === 0) return cell[1] === -1 || cell[1] === 0; // if 0, either empty or filled with 0
+  if (cell[0] === 0) return cell[1] === undefined || cell[1] === -1 || cell[1] === 0; // if 0, either empty or filled with 0
   if (cell[0] === 1) return cell[1] === 1; // if 1, it must be filled with 1
   return true; // if 1 but empty, if 0 but filled with 1 and if 1 but filled with 0
 }
