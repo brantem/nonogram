@@ -31,10 +31,19 @@ function _generate(width: number, height: number) {
   return grid;
 }
 
+type Settings = {
+  width: number;
+  height: number;
+  cell: {
+    size: number;
+  };
+  isVisible: boolean;
+};
+
 if (!localStorage.getItem('settings')) {
-  localStorage.setItem('settings', JSON.stringify({ width: 30, height: 30, cell: { size: 24 } }));
+  localStorage.setItem('settings', JSON.stringify({ width: 30, height: 30, cell: { size: 24 }, isVisible: true }));
 }
-export const settings = proxy(JSON.parse(localStorage.getItem('settings')!));
+export const settings = proxy<Settings>(JSON.parse(localStorage.getItem('settings')!));
 devtools(settings, { name: 'nonogram.settings' });
 subscribe(settings, () => localStorage.setItem('settings', JSON.stringify(settings)));
 

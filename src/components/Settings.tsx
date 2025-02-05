@@ -1,16 +1,42 @@
 import { useState } from 'react';
 import { useSnapshot } from 'valtio';
 
+import { cn } from 'lib/helpers';
 import * as nonogram from 'lib/nonogram';
 
-export default function Sidebar() {
+export default function Settings() {
   return (
-    <div className="flex justify-between border-b border-neutral-200 bg-neutral-100 text-sm max-md:flex-col md:items-center dark:border-neutral-800 dark:bg-neutral-900">
+    <Container>
       <Board />
 
       <div className="h-px w-full bg-neutral-200 md:hidden dark:bg-neutral-800" />
 
       <Cell />
+    </Container>
+  );
+}
+
+function Container({ children }: React.PropsWithChildren) {
+  const isVisible = useSnapshot(nonogram.settings).isVisible;
+
+  return (
+    <div
+      className={cn(
+        'relative flex justify-between border-b border-neutral-200 bg-neutral-100 text-sm max-md:flex-col md:items-center dark:border-neutral-800 dark:bg-neutral-900',
+        !isVisible && 'max-md:-mt-25.5',
+      )}
+    >
+      {children}
+
+      <button
+        className={cn(
+          'absolute left-1/2 z-20 flex h-8 -translate-x-1/2 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900 px-3 text-sm md:hidden',
+          isVisible ? '-bottom-4' : '-bottom-10',
+        )}
+        onClick={() => (nonogram.settings.isVisible = !nonogram.settings.isVisible)}
+      >
+        Settings
+      </button>
     </div>
   );
 }
