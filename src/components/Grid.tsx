@@ -7,13 +7,13 @@ import * as nonogram from 'lib/nonogram';
 import * as highlight from 'lib/highlight';
 import * as selection from 'lib/selection';
 
-export default function Board() {
+export default function Grid() {
   const settings = useSnapshot(nonogram.settings);
   const groups = generateGroups(settings.height, 5);
 
   return (
     <div
-      id="board"
+      id="grid"
       className="relative border-[2px] border-neutral-500"
       onContextMenu={(e) => e.preventDefault()}
       onPointerLeave={highlight.clear}
@@ -64,15 +64,15 @@ function Selection() {
   })();
   const [x2, y2] = end || [0, 0];
 
-  const board = document.getElementById('board')?.getBoundingClientRect();
-  if (!board) return;
+  const grid = document.getElementById('grid')?.getBoundingClientRect();
+  if (!grid) return;
 
   const cell1 = document.querySelector(`[data-c="${x1}.${y1}"]`)?.getBoundingClientRect();
   const cell2 = end ? document.querySelector(`[data-c="${x2}.${y2}"]`)?.getBoundingClientRect() : cell1;
   if (!cell1 || !cell2) return;
 
   const distance = (end ? Math.abs(x2 - x1) /* x */ || Math.abs(y2 - y1) /* y */ : 0) + 1;
-  const isFirstRow = cell1.top - board.top - 2 /* <Board /> border */ === 0;
+  const isFirstRow = cell1.top - grid.top - 2 /* <Grid /> border */ === 0;
   const isHorizontal = direction === Direction.LR || direction === Direction.RL;
   const isVertical = direction === Direction.TB || direction === Direction.BT;
 
@@ -84,8 +84,8 @@ function Selection() {
         direction === Direction.TB && 'items-end',
       )}
       style={{
-        top: cell1.top - board.top - /* <Board /> border */ 2 - /* <Selection /> border */ 5,
-        left: cell1.left - board.left - /* <Board /> border */ 2 - /* <Selection /> border */ 5,
+        top: cell1.top - grid.top - /* <Grid /> border */ 2 - /* <Selection /> border */ 5,
+        left: cell1.left - grid.left - /* <Grid /> border */ 2 - /* <Selection /> border */ 5,
         height: cell2.bottom - cell1.top + 10 /* <Selection /> border * 2 */,
         width: cell2.right - cell1.left + 10 /* <Selection /> border * 2 */,
       }}

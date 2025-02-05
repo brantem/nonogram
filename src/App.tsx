@@ -4,7 +4,7 @@ import { useSnapshot } from 'valtio';
 import Settings from 'components/Settings';
 import Top from 'components/Top';
 import Left from 'components/Left';
-import Board from 'components/Board';
+import Grid from 'components/Grid';
 
 import { cn } from 'lib/helpers';
 import * as nonogram from 'lib/nonogram';
@@ -31,7 +31,7 @@ function App() {
         <div className="flex flex-col">
           <Top />
           <div className="h-[3px] w-full bg-neutral-900 dark:bg-neutral-700" />
-          <Board />
+          <Grid />
         </div>
       </Container>
     </>

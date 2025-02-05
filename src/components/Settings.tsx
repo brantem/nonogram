@@ -7,7 +7,7 @@ import * as nonogram from 'lib/nonogram';
 export default function Settings() {
   return (
     <Container>
-      <Board />
+      <Grid />
 
       <div className="h-px w-full bg-neutral-200 md:hidden dark:bg-neutral-800" />
 
@@ -59,7 +59,7 @@ const data = {
   },
 };
 
-function Board() {
+function Grid() {
   const [settings, setSettings] = useState(() => ({
     width: nonogram.settings.width,
     height: nonogram.settings.height,
