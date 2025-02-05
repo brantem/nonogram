@@ -3,7 +3,7 @@ import { devtools } from 'valtio/utils';
 import { derive } from 'derive-valtio';
 
 import type * as types from 'types';
-import { padStart } from './helpers';
+import { padStart } from '../helpers';
 
 function _generate(width: number, height: number) {
   const grid: types.Cell[][] = [];

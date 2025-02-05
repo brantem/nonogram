@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSnapshot } from 'valtio';
 
 import { cn } from 'lib/helpers';
-import * as nonogram from 'lib/nonogram';
+import * as nonogram from 'lib/state/nonogram';
 
 export default function Settings() {
   return (

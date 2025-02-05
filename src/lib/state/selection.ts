@@ -2,7 +2,7 @@ import { proxy, subscribe } from 'valtio';
 import { devtools } from 'valtio/utils';
 
 import type * as types from 'types';
-import * as nonogram from './state/nonogram';
+import * as nonogram from './nonogram';
 
 type Data = {
   value: types.Cell[1];

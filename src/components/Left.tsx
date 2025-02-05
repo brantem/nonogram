@@ -3,8 +3,8 @@ import { useSnapshot } from 'valtio';
 import Hint from './Hint';
 
 import { generateGroups, cn } from 'lib/helpers';
-import * as nonogram from 'lib/nonogram';
-import * as highlight from 'lib/highlight';
+import * as nonogram from 'lib/state/nonogram';
+import * as highlight from 'lib/state/highlight';
 
 export default function Left() {
   const settings = useSnapshot(nonogram.settings);

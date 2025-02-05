@@ -7,8 +7,8 @@ import Left from 'components/Left';
 import Grid from 'components/Grid';
 
 import { cn } from 'lib/helpers';
-import * as nonogram from 'lib/nonogram';
-import * as selection from 'lib/selection';
+import * as nonogram from 'lib/state/nonogram';
+import * as selection from 'lib/state/selection';
 
 function App() {
   useEffect(() => {

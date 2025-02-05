@@ -3,9 +3,9 @@ import { useSnapshot } from 'valtio';
 
 import type * as types from 'types';
 import { generateGroups, cn, buttonToValue } from 'lib/helpers';
-import * as nonogram from 'lib/nonogram';
-import * as highlight from 'lib/highlight';
-import * as selection from 'lib/selection';
+import * as nonogram from 'lib/state/nonogram';
+import * as highlight from 'lib/state/highlight';
+import * as selection from 'lib/state/selection';
 
 export default function Grid() {
   const settings = useSnapshot(nonogram.settings);
