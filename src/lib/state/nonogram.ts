@@ -4,6 +4,7 @@ import { derive } from 'derive-valtio';
 
 import type * as types from 'types';
 import { padStart } from '../helpers';
+import Worker from '../worker?worker';
 
 function _generate(width: number, height: number) {
   const grid: types.Cell[][] = [];
@@ -105,6 +106,28 @@ devtools(settings, { name: 'nonogram.settings' });
 export function generate() {
   grid.splice(0);
   Object.assign(grid, _generate(settings.width, settings.height));
+}
+
+export async function generateFromFile(file: File) {
+  const worker = new Worker();
+  worker.postMessage({ file, options: { width: settings.width, height: settings.height } });
+
+  worker.onmessage = (e) => {
+    const { status, ...message } = e.data;
+    switch (status) {
+      case 'success':
+        grid.splice(0);
+        Object.assign(grid, message.data);
+        return;
+      default:
+        // TODO
+        console.log({ status, ...message });
+    }
+  };
+  worker.onerror = (err) => {
+    // TODO
+    console.error('error:', err);
+  };
 }
 
 export function paint(coord1: types.Coord, coord2: types.Coord, v: types.Cell[1]) {

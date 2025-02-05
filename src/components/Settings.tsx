@@ -30,12 +30,22 @@ function Container({ children }: React.PropsWithChildren) {
 
       <button
         className={cn(
-          'absolute left-1/2 z-20 flex h-8 -translate-x-1/2 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900 px-3 text-sm md:hidden',
-          isVisible ? '-bottom-4' : '-bottom-10',
+          'absolute left-1/2 z-20 flex h-8 -translate-x-1/2 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900 text-sm md:hidden',
+          isVisible ? '-bottom-4 aspect-square' : '-bottom-10 px-3',
         )}
         onClick={() => (nonogram.settings.isVisible = !nonogram.settings.isVisible)}
       >
-        Settings
+        {isVisible ? (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
+            <path
+              fillRule="evenodd"
+              d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        ) : (
+          'Settings'
+        )}
       </button>
     </div>
   );
@@ -59,7 +69,12 @@ const data = {
   },
 };
 
+type FileWithPreview = File & {
+  preview: string;
+};
+
 function Grid() {
+  const [file, setFile] = useState<FileWithPreview | null>(null);
   const [settings, setSettings] = useState(() => ({
     width: nonogram.settings.width,
     height: nonogram.settings.height,
@@ -68,15 +83,51 @@ function Grid() {
   return (
     <form
       className="flex items-stretch justify-between gap-2 p-2"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         if (settings.width < data.width.min || settings.width > data.width.max) return;
         if (settings.height < data.height.min || settings.height > data.height.max) return;
         nonogram.settings.width = settings.width;
         nonogram.settings.height = settings.height;
-        nonogram.generate();
+        if (file) {
+          await nonogram.generateFromFile(file);
+        } else {
+          nonogram.generate();
+        }
       }}
     >
+      {/* TODO */}
+      {/* <label className="flex h-7.5 divide-x divide-neutral-300 overflow-hidden rounded-md border border-neutral-300 hover:border-neutral-200 hover:bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-800">
+        <input
+          type="file"
+          className="hidden"
+          accept="image/*"
+          onChange={(e) => {
+            if (!e.target.files || !e.target.files.length) return;
+            const file = e.target.files[0];
+            setFile((prev) => {
+              if (prev) URL.revokeObjectURL(prev.preview);
+              return Object.assign(file, { preview: URL.createObjectURL(file) });
+            });
+          }}
+        />
+
+        {file ? (
+          <img src={file.preview} className="h-full object-contain" />
+        ) : (
+          <div className="flex items-center gap-2 py-1 pr-2 pl-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
+              <path
+                fillRule="evenodd"
+                d="M1 5.25A2.25 2.25 0 0 1 3.25 3h13.5A2.25 2.25 0 0 1 19 5.25v9.5A2.25 2.25 0 0 1 16.75 17H3.25A2.25 2.25 0 0 1 1 14.75v-9.5Zm1.5 5.81v3.69c0 .414.336.75.75.75h13.5a.75.75 0 0 0 .75-.75v-2.69l-2.22-2.219a.75.75 0 0 0-1.06 0l-1.91 1.909.47.47a.75.75 0 1 1-1.06 1.06L6.53 8.091a.75.75 0 0 0-1.06 0l-2.97 2.97ZM12 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>Image</span>
+          </div>
+        )}
+      </label> */}
+
       <div className="flex items-center gap-2">
         <div className="flex w-fit items-center">
           <Input
@@ -111,8 +162,18 @@ function Grid() {
         type="submit"
         className="shrink-0 rounded-md border border-neutral-600 bg-neutral-900 px-3 py-1 font-medium text-white hover:bg-neutral-800 dark:border-neutral-800 dark:bg-neutral-700 dark:hover:bg-neutral-600"
       >
-        Generate
+        Generate{file ? ' From Image' : null}
       </button>
+
+      {file && (
+        <button
+          type="button"
+          className="flex items-center justify-center rounded-md border border-red-300 bg-red-100 px-3 py-1 text-red-500 hover:border-red-200 hover:bg-red-50 dark:border-red-900 dark:bg-red-950 dark:hover:border-red-800 dark:hover:bg-red-900"
+          onClick={() => setFile(null)}
+        >
+          Remove Image
+        </button>
+      )}
 
       {/* TODO: save and load buttons */}
     </form>
