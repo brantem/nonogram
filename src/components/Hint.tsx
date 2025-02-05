@@ -18,7 +18,7 @@ export default function Hint({ hint }: { hint: types.Hint }) {
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          strokeWidth={4}
+          strokeWidth={3}
           stroke="currentColor"
           className="absolute inset-0 aspect-square"
         >
