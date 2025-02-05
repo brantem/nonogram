@@ -23,7 +23,7 @@ function Container({ children }: React.PropsWithChildren) {
     <div
       className={cn(
         'relative flex justify-between border-b border-neutral-200 bg-neutral-100 text-sm max-md:flex-col md:items-center dark:border-neutral-800 dark:bg-neutral-900',
-        !isVisible && 'max-md:-mt-25.5',
+        !isVisible && 'max-md:-mt-23',
       )}
     >
       {children}
@@ -66,10 +66,18 @@ function Grid() {
   }));
 
   return (
-    <div className="flex items-stretch justify-between gap-2 p-2">
+    <form
+      className="flex items-stretch justify-between gap-2 p-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (settings.width < data.width.min || settings.width > data.width.max) return;
+        if (settings.height < data.height.min || settings.height > data.height.max) return;
+        nonogram.settings.width = settings.width;
+        nonogram.settings.height = settings.height;
+        nonogram.generate();
+      }}
+    >
       <div className="flex items-center gap-2">
-        <span className="text-neutral-500">Size</span>
-
         <div className="flex w-fit items-center">
           <Input
             type="number"
@@ -100,21 +108,14 @@ function Grid() {
 
       {/* TODO: delay before the next generate */}
       <button
-        type="reset"
+        type="submit"
         className="shrink-0 rounded-md border border-neutral-600 bg-neutral-900 px-3 py-1 font-medium text-white hover:bg-neutral-800 dark:border-neutral-800 dark:bg-neutral-700 dark:hover:bg-neutral-600"
-        onClick={() => {
-          if (settings.width < data.width.min || settings.width > data.width.max) return;
-          if (settings.height < data.height.min || settings.height > data.height.max) return;
-          nonogram.settings.width = settings.width;
-          nonogram.settings.height = settings.height;
-          nonogram.generate();
-        }}
       >
         Generate
       </button>
 
       {/* TODO: save and load buttons */}
-    </div>
+    </form>
   );
 }
 
@@ -122,7 +123,7 @@ function Input(props: Omit<React.ComponentPropsWithoutRef<'input'>, 'className'>
   return (
     <input
       {...props}
-      className="w-12 rounded-md border-neutral-200 px-2 py-1 text-center tabular-nums invalid:border-red-500 invalid:ring-red-600 invalid:focus:border-red-600 invalid:focus:ring max-md:flex-1 dark:border-neutral-800 dark:bg-black"
+      className="w-12 rounded-md border-neutral-200 px-2 py-1 text-center text-sm tabular-nums invalid:border-red-500 invalid:ring-red-600 invalid:focus:border-red-600 invalid:focus:ring max-md:flex-1 dark:border-neutral-800 dark:bg-black"
     />
   );
 }
@@ -164,7 +165,7 @@ function ZoomButton(props: Omit<React.ComponentPropsWithoutRef<'button'>, 'class
   return (
     <button
       {...props}
-      className="flex items-center justify-center rounded-md border border-neutral-300 p-1.5 hover:bg-white dark:border-neutral-700 dark:hover:bg-neutral-800"
+      className="flex items-center justify-center rounded-md border border-neutral-300 p-1 hover:border-neutral-200 hover:bg-white dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-800"
     />
   );
 }
