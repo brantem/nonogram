@@ -55,6 +55,13 @@ export const grid = proxy<types.Cell[][]>(JSON.parse(localStorage.getItem('grid'
 devtools(grid, { name: 'nonogram.grid' });
 subscribe(grid, () => localStorage.setItem('grid', JSON.stringify(grid)));
 
+export const status = derive({
+  isCompleted: (get) => {
+    return get(grid).every((row) => row.every((cell) => cell[1] === cell[0]));
+  },
+});
+devtools(status, { name: 'nonogram.status' });
+
 export const hints = derive({
   top: (get) => {
     const _grid = get(grid);
@@ -101,7 +108,7 @@ export const hints = derive({
     return hints.map((arr) => padStart(arr, max, [0]));
   },
 });
-devtools(settings, { name: 'nonogram.settings' });
+devtools(hints, { name: 'nonogram.hints' });
 
 export function generate() {
   grid.splice(0);
