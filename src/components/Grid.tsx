@@ -1,6 +1,8 @@
 import { Fragment } from 'react';
 import { useSnapshot } from 'valtio';
 
+import XMarkIcon from './icons/XMarkIcon';
+
 import type * as types from 'types';
 import { generateGroups, cn, buttonToValue } from 'lib/helpers';
 import * as nonogram from 'lib/state/nonogram';
@@ -146,7 +148,11 @@ function Cell({ x, y }: { x: number; y: number }) {
 
   return (
     <div
-      className="cell flex size-(--cell-size) cursor-pointer items-center justify-center bg-white dark:bg-black"
+      className={cn(
+        'cell size-(--cell-size) cursor-pointer bg-white dark:bg-black',
+        cell[1] === 0 && 'relative overflow-hidden',
+        cell[1] === 1 && 'flex items-center justify-center',
+      )}
       data-c={`${x}.${y}`}
       onPointerDown={(e) => {
         let v = buttonToValue(e.button);
@@ -162,18 +168,7 @@ function Cell({ x, y }: { x: number; y: number }) {
       {(() => {
         switch (cell[1]) {
           case 0:
-            return (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={3}
-                stroke="currentColor"
-                className={cn('aspect-square', !isMatch && 'text-rose-500')}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-              </svg>
-            );
+            return <XMarkIcon className={cn('absolute -inset-1 aspect-square', !isMatch && 'text-rose-500')} />;
           case 1:
             return <div className={cn('size-full', isMatch ? 'bg-black dark:bg-neutral-300' : 'bg-rose-500')} />;
           default:
