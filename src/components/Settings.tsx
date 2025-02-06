@@ -22,7 +22,7 @@ function Container({ children }: React.PropsWithChildren) {
   return (
     <div
       className={cn(
-        'relative flex justify-between border-b border-neutral-200 bg-neutral-100 text-sm max-md:flex-col md:items-center dark:border-neutral-800 dark:bg-neutral-900',
+        'relative flex justify-between border-b border-neutral-200 bg-neutral-100 text-sm max-md:flex-col md:items-center dark:border-neutral-800 dark:bg-neutral-900 dark:text-white',
         !isVisible && 'max-md:-mt-23',
       )}
     >
