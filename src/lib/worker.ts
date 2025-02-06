@@ -50,6 +50,8 @@ async function generate(file: File, options: { width: number; height: number }) 
     grid.push(row);
   }
 
+  // TODO: auto fill
+
   bitmap.close();
   return grid;
 }
