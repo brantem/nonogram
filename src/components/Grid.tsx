@@ -31,9 +31,7 @@ export default function Grid() {
               ))}
             </div>
 
-            <span className="absolute bottom-0 left-[calc(100%+var(--spacing)*2)] text-base leading-none">
-              {i * 5 + group}
-            </span>
+            <span className="absolute bottom-0 left-full ml-2 text-base leading-none">{i * 5 + group}</span>
           </div>
         ))}
       </div>
@@ -126,11 +124,7 @@ function Row({ y, isLast }: { y: number; isLast: boolean }) {
               ))}
             </div>
 
-            {isLast && (
-              <span className="absolute top-[calc(100%+var(--spacing)*2)] right-0 text-base leading-none">
-                {i * 5 + group}
-              </span>
-            )}
+            {isLast && <span className="absolute top-full right-0 mt-2 text-base leading-none">{i * 5 + group}</span>}
           </div>
         );
       })}
