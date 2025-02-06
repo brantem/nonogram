@@ -26,7 +26,7 @@ export default function Left() {
 
 function Hints({ y }: { y: number }) {
   const hints = useSnapshot(nonogram.hints).left[y];
-  const isActive = useSnapshot(highlight.data).coord[y] === 1;
+  const isActive = useSnapshot(highlight.data).y[y];
   return (
     <div className={cn('flex divide-x divide-neutral-500', isActive && 'group is-active')}>
       {hints.map((hint, i) => (
