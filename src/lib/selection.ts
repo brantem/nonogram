@@ -29,14 +29,8 @@ export function move(coord: types.Coord) {
   if (!start) return;
 
   const [x1, y1] = start;
-  const [x3, y3] = coord;
-
-  if (!end) {
-    if (x1 !== x3 && y1 !== y3) data.coords.splice(0); // diagonal
-    return data.coords.push(coord);
-  }
-
   const [x2, y2] = end;
+  const [x3, y3] = coord;
 
   const isHorizontal = y1 === y2;
   const isVertical = x1 === x2;
