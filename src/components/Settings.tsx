@@ -1,7 +1,18 @@
 import { useState } from 'react';
 import { useSnapshot } from 'valtio';
+import {
+  ChevronUpIcon,
+  MinusIcon,
+  PhotoIcon,
+  PlusIcon,
+  SunIcon,
+  MoonIcon,
+  ComputerDesktopIcon,
+} from '@heroicons/react/20/solid';
+import { XMarkIcon } from '@heroicons/react/16/solid';
 
 import { cn } from 'lib/helpers';
+import * as theme from 'lib/state/theme';
 import * as nonogram from 'lib/state/nonogram';
 
 export default function Settings() {
@@ -11,7 +22,10 @@ export default function Settings() {
 
       <div className="h-px w-full bg-neutral-200 md:hidden dark:bg-neutral-800" />
 
-      <Cell />
+      <div className="flex items-center justify-between gap-2 p-2">
+        <Cell />
+        <Theme />
+      </div>
     </Container>
   );
 }
@@ -23,29 +37,19 @@ function Container({ children }: React.PropsWithChildren) {
     <div
       className={cn(
         'relative flex justify-between border-b border-neutral-200 bg-neutral-100 text-sm max-md:flex-col md:items-center dark:border-neutral-800 dark:bg-neutral-900 dark:text-white',
-        !isVisible && 'max-md:-mt-23',
+        !isVisible && 'max-md:-mt-[94px]',
       )}
     >
       {children}
 
       <button
         className={cn(
-          'absolute left-1/2 z-20 flex h-8 -translate-x-1/2 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900 text-sm md:hidden',
+          'absolute left-1/2 z-20 flex h-8 -translate-x-1/2 items-center justify-center rounded-full border border-neutral-200 bg-neutral-100 text-sm md:hidden dark:border-neutral-800 dark:bg-neutral-900',
           isVisible ? '-bottom-4 aspect-square' : '-bottom-10 px-3',
         )}
         onClick={() => (nonogram.settings.isVisible = !nonogram.settings.isVisible)}
       >
-        {isVisible ? (
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
-            <path
-              fillRule="evenodd"
-              d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z"
-              clipRule="evenodd"
-            />
-          </svg>
-        ) : (
-          'Settings'
-        )}
+        {isVisible ? <ChevronUpIcon className="size-5" /> : 'Settings'}
       </button>
     </div>
   );
@@ -116,13 +120,7 @@ function Grid() {
           <img src={file.preview} className="h-full object-contain" />
         ) : (
           <div className="flex items-center gap-2 py-1 pr-2 pl-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
-              <path
-                fillRule="evenodd"
-                d="M1 5.25A2.25 2.25 0 0 1 3.25 3h13.5A2.25 2.25 0 0 1 19 5.25v9.5A2.25 2.25 0 0 1 16.75 17H3.25A2.25 2.25 0 0 1 1 14.75v-9.5Zm1.5 5.81v3.69c0 .414.336.75.75.75h13.5a.75.75 0 0 0 .75-.75v-2.69l-2.22-2.219a.75.75 0 0 0-1.06 0l-1.91 1.909.47.47a.75.75 0 1 1-1.06 1.06L6.53 8.091a.75.75 0 0 0-1.06 0l-2.97 2.97ZM12 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <PhotoIcon className="size-5" />
             <span>Image</span>
           </div>
         )}
@@ -138,14 +136,12 @@ function Grid() {
             onChange={(e) => setSettings((prev) => ({ ...prev, width: parseInt(e.target.value) }))}
           />
 
-          <svg
+          <XMarkIcon
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
             fill="currentColor"
             className="size-4 shrink-0 text-neutral-500"
-          >
-            <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z" />
-          </svg>
+          />
 
           <Input
             type="number"
@@ -193,40 +189,54 @@ function Cell() {
   const cell = useSnapshot(nonogram.settings.cell);
 
   return (
-    <div className="flex items-center justify-between gap-2 p-2">
+    <div className="flex items-center justify-between gap-2 max-md:flex-1">
       <span className="text-neutral-500">{cell.size}px</span>
 
       <div className="flex gap-1">
-        <ZoomButton
+        <Button
           onClick={() => (nonogram.settings.cell.size -= data.cell.size.step)}
           disabled={cell.size === data.cell.size.min}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
-            <path
-              fillRule="evenodd"
-              d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </ZoomButton>
-        <ZoomButton
+          <MinusIcon className="size-5" />
+        </Button>
+        <Button
           onClick={() => (nonogram.settings.cell.size += data.cell.size.step)}
           disabled={cell.size === data.cell.size.max}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
-            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-          </svg>
-        </ZoomButton>
+          <PlusIcon className="size-5" />
+        </Button>
       </div>
     </div>
   );
 }
 
-function ZoomButton(props: Omit<React.ComponentPropsWithoutRef<'button'>, 'className'>) {
+function Theme() {
+  const value = useSnapshot(theme.data).value;
+
+  return (
+    <Button onClick={theme.toggle} className="p-1.5">
+      {(() => {
+        switch (value) {
+          case 'light':
+            return <SunIcon className="size-4" />;
+          case 'dark':
+            return <MoonIcon className="size-4" />;
+          default:
+            return <ComputerDesktopIcon className="size-4" />;
+        }
+      })()}
+    </Button>
+  );
+}
+
+function Button({ className, ...props }: React.ComponentPropsWithoutRef<'button'>) {
   return (
     <button
       {...props}
-      className="flex items-center justify-center rounded-md border border-neutral-300 p-1 hover:border-neutral-200 hover:bg-white dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-800"
+      className={cn(
+        'flex items-center justify-center rounded-md border border-neutral-300 p-1 hover:border-neutral-200 hover:bg-white dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-800',
+        className,
+      )}
     />
   );
 }
