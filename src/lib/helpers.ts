@@ -27,3 +27,7 @@ export function buttonToValue(button: number): -1 | 0 | 1 {
       return -1;
   }
 }
+
+export const sleep = async (value: number) => {
+  return await new Promise((resolve) => setTimeout(resolve, value));
+};
