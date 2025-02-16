@@ -19,10 +19,18 @@ import * as theme from 'lib/state/theme';
 import * as nonogram from 'lib/state/nonogram';
 import * as constants from 'constants';
 
-export default function Settings() {
+export default function Tools() {
   return (
     <Container>
-      <Grid />
+      <div className="flex items-stretch gap-2 p-2">
+        {/* TODO: button to see all ssaved grids */}
+        <Grid />
+        <Separator />
+        <Button className="px-3 py-1" onClick={nonogram.reset}>
+          Reset
+        </Button>
+        {/* TODO: button to save grid */}
+      </div>
 
       <div className={cn('h-px w-full bg-neutral-200 md:hidden', 'dark:bg-neutral-800')} />
 
@@ -43,7 +51,7 @@ function Container({ children }: React.PropsWithChildren) {
       className={cn(
         'relative flex justify-between border-b border-neutral-200 bg-neutral-50 text-sm max-md:flex-col md:items-center',
         'dark:border-neutral-800 dark:bg-neutral-950 dark:text-white',
-        !isVisible && 'max-md:-mt-[94px] md:-mt-[49px]',
+        !isVisible && 'max-md:-mt-[98px] md:-mt-[49px]',
       )}
     >
       {children}
@@ -56,7 +64,7 @@ function Container({ children }: React.PropsWithChildren) {
         )}
         onClick={() => (nonogram.settings.isVisible = !nonogram.settings.isVisible)}
       >
-        {isVisible ? <ChevronUpIcon className="size-5" /> : 'Settings'}
+        {isVisible ? <ChevronUpIcon className="size-5" /> : 'Tools'}
       </button>
     </div>
   );
@@ -73,7 +81,7 @@ function Grid() {
   return (
     <>
       <form
-        className="flex items-stretch justify-between gap-2 p-2"
+        className="flex flex-1 items-stretch justify-between gap-2"
         onSubmit={async (e) => {
           e.preventDefault();
           if (settings.width < constants.width.min || settings.width > constants.width.max) return;
@@ -107,7 +115,7 @@ function Grid() {
               'dark:border-neutral-200 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100',
             )}
           >
-            Generate
+            New
           </button>
 
           <DropdownMenu.Root>
@@ -161,12 +169,14 @@ function Cell() {
 
       <div className="flex gap-1">
         <Button
+          className="size-8"
           onClick={() => (nonogram.settings.cell.size -= constants.cell.size.step)}
           disabled={cell.size === constants.cell.size.min}
         >
           <MinusIcon className="size-5" />
         </Button>
         <Button
+          className="size-8"
           onClick={() => (nonogram.settings.cell.size += constants.cell.size.step)}
           disabled={cell.size === constants.cell.size.max}
         >
@@ -181,7 +191,7 @@ function Theme() {
   const value = useSnapshot(theme.data).value;
 
   return (
-    <Button onClick={theme.toggle} className="p-1.5">
+    <Button className="size-8 p-1.5" onClick={theme.toggle}>
       {(() => {
         switch (value) {
           case 'light':
@@ -205,7 +215,7 @@ function Button({ className, ...props }: React.ComponentPropsWithoutRef<'button'
     <button
       {...props}
       className={cn(
-        'flex size-8 items-center justify-center rounded-md border border-neutral-200 hover:bg-white',
+        'flex items-center justify-center rounded-md border border-neutral-200 hover:bg-white',
         'dark:border-neutral-800 dark:hover:bg-neutral-900',
         className,
       )}

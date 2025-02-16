@@ -114,6 +114,10 @@ export function generate() {
   Object.assign(grid, _generate(settings.width, settings.height));
 }
 
+export function reset() {
+  grid.forEach((cells) => cells.forEach((cell) => (cell[1] = -1)));
+}
+
 export function paint(coord1: types.Coord, coord2: types.Coord, v: types.Cell[1]) {
   const [x1, y1] = coord1;
   const [x2, y2] = coord2;

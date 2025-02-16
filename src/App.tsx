@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSnapshot } from 'valtio';
 
-import Settings from 'components/Settings';
+import Tools from 'components/Tools';
 import Top from 'components/Top';
 import Left from 'components/Left';
 import Grid from 'components/Grid';
@@ -20,7 +20,7 @@ function App() {
 
   return (
     <>
-      <Settings />
+      <Tools />
 
       <Container>
         <div className="flex flex-col">
