@@ -24,7 +24,7 @@ export default function Settings() {
     <Container>
       <Grid />
 
-      <div className="h-px w-full bg-neutral-200 md:hidden dark:bg-neutral-800" />
+      <div className={cn('h-px w-full bg-neutral-200 md:hidden', 'dark:bg-neutral-800')} />
 
       <div className="flex items-stretch justify-between gap-2 p-2">
         <Cell />
@@ -41,15 +41,17 @@ function Container({ children }: React.PropsWithChildren) {
   return (
     <div
       className={cn(
-        'relative flex justify-between border-b border-neutral-200 bg-neutral-100 text-sm max-md:flex-col md:items-center dark:border-neutral-800 dark:bg-neutral-900 dark:text-white',
-        !isVisible && 'max-md:-mt-[94px]',
+        'relative flex justify-between border-b border-neutral-200 bg-neutral-50 text-sm max-md:flex-col md:items-center',
+        'dark:border-neutral-800 dark:bg-neutral-950 dark:text-white',
+        !isVisible && 'max-md:-mt-[94px] md:-mt-[49px]',
       )}
     >
       {children}
 
       <button
         className={cn(
-          'absolute left-1/2 z-20 flex h-8 -translate-x-1/2 items-center justify-center rounded-full border border-neutral-200 bg-neutral-100 text-sm md:hidden dark:border-neutral-800 dark:bg-neutral-900',
+          'absolute left-1/2 z-20 flex h-8 -translate-x-1/2 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50 text-sm',
+          'dark:border-neutral-800 dark:bg-neutral-950',
           isVisible ? '-bottom-4 aspect-square' : '-bottom-10 px-3',
         )}
         onClick={() => (nonogram.settings.isVisible = !nonogram.settings.isVisible)}
@@ -100,7 +102,10 @@ function Grid() {
           {/* TODO: delay before the next generate */}
           <button
             type="submit"
-            className="rounded-l-md border border-neutral-600 bg-neutral-900 px-3 py-1 hover:bg-neutral-800 dark:border-neutral-800 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+            className={cn(
+              'rounded-l-md border border-neutral-800 bg-neutral-950 px-3 py-1 hover:bg-neutral-900',
+              'dark:border-neutral-200 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100',
+            )}
           >
             Generate
           </button>
@@ -109,7 +114,10 @@ function Grid() {
             <DropdownMenu.Trigger asChild>
               <button
                 type="button"
-                className="-ml-px flex size-8 items-center justify-center rounded-r-md border border-neutral-600 bg-neutral-900 hover:bg-neutral-800 dark:border-neutral-800 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+                className={cn(
+                  '-ml-px flex size-8 items-center justify-center rounded-r-md border border-neutral-800 bg-neutral-950 hover:bg-neutral-900',
+                  'dark:border-neutral-200 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100',
+                )}
               >
                 <ChevronDownIcon className="size-4" />
               </button>
@@ -117,12 +125,18 @@ function Grid() {
 
             <DropdownMenu.Portal>
               <DropdownMenu.Content
-                className="mt-1 w-[150px] rounded-md border border-neutral-200 bg-white p-0.5 text-sm shadow-xs dark:border-neutral-800 dark:bg-black dark:text-white"
+                className={cn(
+                  'mt-1 w-[150px] rounded-md border border-neutral-200 bg-white p-0.5 text-sm shadow-xs',
+                  'dark:border-neutral-800 dark:bg-neutral-950 dark:text-white',
+                )}
                 side="bottom"
                 align="end"
               >
                 <DropdownMenu.Item
-                  className="flex h-8 items-center rounded px-3 outline-none select-none hover:bg-neutral-100 dark:hover:bg-neutral-900"
+                  className={cn(
+                    'flex h-8 items-center rounded px-3 outline-none select-none hover:bg-neutral-100',
+                    'dark:hover:bg-neutral-900',
+                  )}
                   onClick={() => generateFromImageModalRef.current?.open()}
                 >
                   From Image
@@ -183,7 +197,7 @@ function Theme() {
 }
 
 function Separator({ className }: Pick<React.ComponentPropsWithoutRef<'div'>, 'className'>) {
-  return <div className={cn('-my-2 w-px bg-neutral-200 dark:bg-neutral-800', className)} />;
+  return <div className={cn('-my-2 w-px bg-neutral-200', 'dark:bg-neutral-800', className)} />;
 }
 
 function Button({ className, ...props }: React.ComponentPropsWithoutRef<'button'>) {
@@ -191,7 +205,8 @@ function Button({ className, ...props }: React.ComponentPropsWithoutRef<'button'
     <button
       {...props}
       className={cn(
-        'flex size-8 items-center justify-center rounded-md border border-neutral-300 hover:border-neutral-200 hover:bg-white dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-800',
+        'flex size-8 items-center justify-center rounded-md border border-neutral-200 hover:bg-white',
+        'dark:border-neutral-800 dark:hover:bg-neutral-900',
         className,
       )}
     />

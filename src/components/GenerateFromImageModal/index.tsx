@@ -10,6 +10,7 @@ import * as nonogram from 'lib/state/nonogram';
 import Worker from './worker?worker';
 import { useDebounce } from 'lib/hooks';
 import * as constants from 'constants';
+import { cn } from 'lib/helpers';
 
 export type GenerateFromImageModalHandle = {
   open(): void;
@@ -172,18 +173,26 @@ export default function GenerateFromImageModal({ ref }: { ref: React.Ref<Generat
       }}
     >
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-20 bg-white/50 backdrop-blur-xs dark:bg-black/50" />
+        <Dialog.Overlay className={cn('fixed inset-0 z-20 bg-white/50 backdrop-blur-xs', 'dark:bg-black/50')} />
         <Dialog.Content
-          className="fixed z-30 max-w-full divide-y divide-neutral-200 overflow-auto border-neutral-200 bg-white shadow-xl focus:outline-none max-md:inset-0 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-md md:border dark:divide-neutral-800 dark:border-neutral-800 dark:bg-black dark:text-white"
+          className={cn(
+            'fixed z-30 max-w-full divide-y divide-neutral-200 overflow-auto border-neutral-200 bg-white shadow-xl focus:outline-none max-md:inset-0 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-md md:border',
+            'dark:divide-neutral-800 dark:border-neutral-800 dark:bg-black dark:text-white',
+          )}
           onEscapeKeyDown={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
         >
-          <div className="flex items-center justify-between gap-2 bg-neutral-100 px-3 py-2 dark:bg-neutral-900">
+          <div className={cn('flex items-center justify-between gap-2 bg-neutral-50 px-3 py-2', 'dark:bg-neutral-950')}>
             <div className="flex items-center gap-2">
-              <Dialog.Close className="-ml-1 aspect-square h-full rounded border border-neutral-300 p-1 hover:border-neutral-200 hover:bg-white dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-800">
+              <Dialog.Close
+                className={cn(
+                  '-ml-1 aspect-square h-full rounded border border-neutral-200 p-1 hover:bg-white',
+                  'dark:border-neutral-800 dark:hover:bg-neutral-900',
+                )}
+              >
                 <XMarkIcon className="size-5" />
               </Dialog.Close>
-              <Dialog.Title>Generate From Image</Dialog.Title>
+              <Dialog.Title>Generate</Dialog.Title>
             </div>
 
             <div className="flex gap-2">
@@ -204,7 +213,10 @@ export default function GenerateFromImageModal({ ref }: { ref: React.Ref<Generat
               />
 
               <button
-                className="rounded-md border border-neutral-700 bg-neutral-900 px-3 py-1 text-sm text-white hover:border-neutral-600 hover:bg-neutral-800 dark:border-neutral-200 dark:bg-white dark:text-neutral-900 dark:hover:border-neutral-300 dark:hover:bg-neutral-100"
+                className={cn(
+                  'rounded-md border border-neutral-800 bg-neutral-950 px-3 py-1 text-sm text-white hover:bg-neutral-900',
+                  'dark:border-neutral-200 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100',
+                )}
                 onClick={() => {
                   nonogram.settings.width = data.width;
                   nonogram.settings.height = data.height;
@@ -220,7 +232,12 @@ export default function GenerateFromImageModal({ ref }: { ref: React.Ref<Generat
             </div>
           </div>
 
-          <div className="sticky top-0 grid divide-neutral-200 bg-neutral-100 max-md:divide-y md:grid-cols-4 md:divide-x dark:divide-neutral-800 dark:bg-neutral-900">
+          <div
+            className={cn(
+              'sticky top-0 grid divide-neutral-200 bg-neutral-50 max-md:divide-y md:grid-cols-4 md:divide-x',
+              'dark:divide-neutral-800 dark:bg-neutral-950',
+            )}
+          >
             <div className="flex items-center justify-between gap-2 p-2 pl-3 text-sm text-neutral-500">
               <span>Brightness</span>
               <input
@@ -250,18 +267,18 @@ export default function GenerateFromImageModal({ ref }: { ref: React.Ref<Generat
                 <option value="contain">Contain</option>
               </select>
             </div>
-            <div className="flex items-center justify-between gap-2 px-3 py-2 text-sm text-neutral-500">
+            <label className="flex items-center justify-between gap-2 px-3 py-2 text-sm text-neutral-500">
               <span>Invert</span>
               <input
                 type="checkbox"
-                className="rounded border-neutral-500 text-black disabled:opacity-50"
+                className="rounded disabled:opacity-50"
                 checked={data.options.invert}
                 onChange={(e) => {
                   setData((prev) => ({ ...prev, options: { ...prev.options, invert: e.target.checked } }));
                 }}
                 disabled={!file || debouncedIsGenerating}
               />
-            </div>
+            </label>
             <div className="flex items-center justify-between gap-2 pl-3 text-sm text-neutral-500">
               <span className="py-2">Smoothness</span>
               <select
@@ -282,35 +299,41 @@ export default function GenerateFromImageModal({ ref }: { ref: React.Ref<Generat
             </div>
           </div>
 
-          <div className="grid divide-neutral-200 max-md:divide-y md:grid-cols-[repeat(2,calc(500px+var(--spacing)*6))] md:divide-x dark:divide-neutral-800">
-            <div className="aspect-square flex-1 p-3">
-              <label className="flex size-full items-center justify-center md:size-[500px]">
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (!e.target.files || !e.target.files.length) return;
-                    const file = e.target.files[0];
-                    setFile((prev) => {
-                      if (prev) URL.revokeObjectURL(prev.preview);
-                      return Object.assign(file, { preview: URL.createObjectURL(file) });
-                    });
-                  }}
-                />
-                {file ? (
-                  <img
-                    src={file.preview}
-                    className="size-full border border-neutral-200 object-cover dark:border-neutral-800"
-                  />
-                ) : (
-                  <PhotoIcon className="size-16 text-neutral-500" />
-                )}
-              </label>
-            </div>
-            <div className="relative aspect-square flex-1 p-3">
+          <div
+            className={cn(
+              'grid divide-x divide-neutral-200 max-md:divide-y md:grid-cols-[repeat(2,500px)]',
+              'dark:divide-neutral-800',
+            )}
+          >
+            <label className="flex aspect-square size-full items-center justify-center">
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) => {
+                  if (!e.target.files || !e.target.files.length) return;
+                  const file = e.target.files[0];
+                  setFile((prev) => {
+                    if (prev) URL.revokeObjectURL(prev.preview);
+                    return Object.assign(file, { preview: URL.createObjectURL(file) });
+                  });
+                }}
+              />
+              {file ? (
+                <img src={file.preview} className="size-full object-cover" />
+              ) : (
+                <PhotoIcon className="size-16 text-neutral-500" />
+              )}
+            </label>
+
+            <div className="relative aspect-square">
               {debouncedIsGenerating && (
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 rounded-md border border-neutral-200 bg-white px-3 py-1 text-sm dark:border-neutral-800">
+                <div
+                  className={cn(
+                    'absolute top-2 left-1/2 -translate-x-1/2 rounded-md border border-neutral-200 bg-white px-3 py-1 text-sm',
+                    'dark:border-neutral-800',
+                  )}
+                >
                   Generating...
                 </div>
               )}
