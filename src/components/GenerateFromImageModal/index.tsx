@@ -214,8 +214,8 @@ export default function GenerateFromImageModal({ ref }: { ref: React.Ref<Generat
 
               <button
                 className={cn(
-                  'rounded-md border border-neutral-800 bg-neutral-950 px-3 py-1 text-sm text-white hover:bg-neutral-900',
-                  'dark:border-neutral-200 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100',
+                  'rounded-md border border-sky-300 bg-sky-500 px-3 py-1 text-sm text-white hover:bg-sky-400 focus:z-10',
+                  'dark:border-sky-800 dark:bg-sky-600 dark:hover:bg-sky-700',
                 )}
                 onClick={() => {
                   nonogram.settings.width = data.width;
@@ -306,6 +306,7 @@ export default function GenerateFromImageModal({ ref }: { ref: React.Ref<Generat
             )}
           >
             <label className="flex aspect-square size-full items-center justify-center">
+              {/* TODO: drop image */}
               <input
                 type="file"
                 className="hidden"

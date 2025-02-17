@@ -26,9 +26,15 @@ export default function Tools() {
         {/* TODO: button to see all ssaved grids */}
         <Grid />
         <Separator />
-        <Button className="px-3 py-1" onClick={nonogram.reset}>
+        <button
+          className={cn(
+            'rounded-md border border-red-200 bg-red-50 px-3 py-1 text-red-500 hover:bg-red-100 focus:z-10',
+            'dark:border-red-800 dark:bg-red-950 dark:hover:bg-red-900',
+          )}
+          onClick={nonogram.reset}
+        >
           Reset
-        </Button>
+        </button>
         {/* TODO: button to save grid */}
       </div>
 
@@ -111,8 +117,8 @@ function Grid() {
           <button
             type="submit"
             className={cn(
-              'rounded-l-md border border-neutral-800 bg-neutral-950 px-3 py-1 hover:bg-neutral-900',
-              'dark:border-neutral-200 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100',
+              'rounded-l-md border border-sky-300 bg-sky-500 px-3 py-1 hover:bg-sky-400 focus:z-10',
+              'dark:border-sky-800 dark:bg-sky-600 dark:hover:bg-sky-700',
             )}
           >
             New
@@ -123,8 +129,8 @@ function Grid() {
               <button
                 type="button"
                 className={cn(
-                  '-ml-px flex size-8 items-center justify-center rounded-r-md border border-neutral-800 bg-neutral-950 hover:bg-neutral-900',
-                  'dark:border-neutral-200 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100',
+                  '-ml-px flex size-8 items-center justify-center rounded-r-md border border-sky-300 bg-sky-500 hover:bg-sky-400',
+                  'dark:border-sky-800 dark:bg-sky-600 dark:hover:bg-sky-700',
                 )}
               >
                 <ChevronDownIcon className="size-4" />
