@@ -11,8 +11,8 @@ import {
 } from '@heroicons/react/16/solid';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
-import WidthHeightInput from './WidthHeightInput';
-import GenerateFromImageModal, { GenerateFromImageModalHandle } from './GenerateFromImageModal';
+import SizeInput from './SizeInput';
+import GenerateModal, { GenerateModalHandle } from './GenerateModal';
 
 import { cn } from 'lib/helpers';
 import * as theme from 'lib/state/theme';
@@ -77,7 +77,7 @@ function Container({ children }: React.PropsWithChildren) {
 }
 
 function Grid() {
-  const generateFromImageModalRef = useRef<GenerateFromImageModalHandle>(null);
+  const generateModalRef = useRef<GenerateModalHandle>(null);
 
   const [settings, setSettings] = useState(() => ({
     width: nonogram.settings.width,
@@ -97,19 +97,12 @@ function Grid() {
           nonogram.generate();
         }}
       >
-        <WidthHeightInput
-          width={{
-            value: settings.width,
-            onChange(width) {
-              setSettings((prev) => ({ ...prev, width }));
-            },
+        <SizeInput
+          value={{
+            width: settings.width,
+            height: settings.height,
           }}
-          height={{
-            value: settings.height,
-            onChange(height) {
-              setSettings((prev) => ({ ...prev, height }));
-            },
-          }}
+          onChange={(values) => setSettings((prev) => ({ ...prev, ...values }))}
         />
 
         <div className="flex font-medium text-white">
@@ -151,7 +144,7 @@ function Grid() {
                     'flex h-8 items-center rounded px-3 outline-none select-none hover:bg-neutral-100',
                     'dark:hover:bg-neutral-900',
                   )}
-                  onClick={() => generateFromImageModalRef.current?.open()}
+                  onClick={() => generateModalRef.current?.open()}
                 >
                   From Image
                 </DropdownMenu.Item>
@@ -161,7 +154,7 @@ function Grid() {
         </div>
       </form>
 
-      <GenerateFromImageModal ref={generateFromImageModalRef} />
+      <GenerateModal ref={generateModalRef} />
     </>
   );
 }

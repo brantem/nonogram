@@ -2,7 +2,7 @@ import { useRef, useState, useImperativeHandle, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/solid';
 
-import WidthHeightInput from 'components/WidthHeightInput';
+import SizeInput from 'components/SizeInput';
 
 import type * as types from 'types';
 import type { Options } from './types';
@@ -12,7 +12,7 @@ import { useDebounce } from 'lib/hooks';
 import * as constants from 'constants';
 import { cn } from 'lib/helpers';
 
-export type GenerateFromImageModalHandle = {
+export type GenerateModalHandle = {
   open(): void;
 };
 
@@ -37,7 +37,7 @@ const generateDefaultData = (): Data => ({
   },
 });
 
-export default function GenerateFromImageModal({ ref }: { ref: React.Ref<GenerateFromImageModalHandle> }) {
+export default function GenerateModal({ ref }: { ref: React.Ref<GenerateModalHandle> }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [file, setFile] = useState<FileWithPreview | null>(null);
@@ -129,19 +129,12 @@ export default function GenerateFromImageModal({ ref }: { ref: React.Ref<Generat
             </div>
 
             <div className="flex gap-2">
-              <WidthHeightInput
-                width={{
-                  value: data.width,
-                  onChange(width) {
-                    setData((prev) => ({ ...prev, width }));
-                  },
+              <SizeInput
+                value={{
+                  width: data.width,
+                  height: data.height,
                 }}
-                height={{
-                  value: data.height,
-                  onChange(height) {
-                    setData((prev) => ({ ...prev, height }));
-                  },
-                }}
+                onChange={(values) => setData((prev) => ({ ...prev, ...values }))}
                 disabled={!file || debouncedIsGenerating}
               />
 

@@ -2,27 +2,24 @@ import { XMarkIcon } from '@heroicons/react/16/solid';
 
 import * as constants from 'constants';
 
-type WidthHeightInputProps = {
-  width: {
-    value: number;
-    onChange(value: number): void;
+type SizeInputProps = {
+  value: {
+    width: number;
+    height: number;
   };
-  height: {
-    value: number;
-    onChange(value: number): void;
-  };
+  onChange(values: SizeInputProps['value']): void;
   disabled?: boolean;
 };
 
-export default function WidthHeightInput({ width, height, disabled }: WidthHeightInputProps) {
+export default function SizeInput({ value, onChange, disabled }: SizeInputProps) {
   return (
     <div className="flex w-fit items-center dark:text-white">
       <Input
         type="number"
         min={constants.width.min}
         max={constants.width.max}
-        value={width.value}
-        onChange={(e) => width.onChange(parseInt(e.target.value))}
+        value={value.width}
+        onChange={(e) => onChange({ ...value, width: parseInt(e.target.value) })}
         disabled={disabled}
       />
 
@@ -37,8 +34,8 @@ export default function WidthHeightInput({ width, height, disabled }: WidthHeigh
         type="number"
         min={constants.height.min}
         max={constants.height.max}
-        value={height.value}
-        onChange={(e) => height.onChange(parseInt(e.target.value))}
+        value={value.height}
+        onChange={(e) => onChange({ ...value, height: parseInt(e.target.value) })}
         disabled={disabled}
       />
     </div>
