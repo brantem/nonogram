@@ -5,32 +5,6 @@ import { derive } from 'derive-valtio';
 import type * as types from 'types';
 import { padStart } from '../helpers';
 
-function _generate(width: number, height: number) {
-  const grid: types.Cell[][] = [];
-  const r = new Array(height).fill(true);
-  const c = new Array(width).fill(true);
-
-  for (let y = 0; y < height; y++) {
-    grid[y] = [];
-    for (let x = 0; x < width; x++) {
-      const value = Math.random() < 0.5 ? 1 : 0;
-      grid[y][x] = [value];
-
-      if (value !== 1) continue;
-      r[y] = false;
-      c[x] = false;
-    }
-  }
-
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      if (r[y] || c[x]) grid[y][x][1] = 0;
-    }
-  }
-
-  return grid;
-}
-
 type Settings = {
   cell: {
     size: number;
@@ -46,15 +20,15 @@ devtools(settings, { name: 'nonogram.settings' });
 subscribe(settings, () => localStorage.setItem('settings', JSON.stringify(settings)));
 
 if (!localStorage.getItem('grid')) {
-  localStorage.setItem('grid', JSON.stringify(_generate(50, 50)));
+  localStorage.setItem('grid', JSON.stringify(generate(50, 50)));
 }
 export const grid = proxy<types.Cell[][]>(JSON.parse(localStorage.getItem('grid')!));
 devtools(grid, { name: 'nonogram.grid' });
 subscribe(grid, () => localStorage.setItem('grid', JSON.stringify(grid)));
 
 export const size = derive({
-  width: (get) => get(grid)[0].length,
-  height: (get) => get(grid).length,
+  width: (get) => get(grid)[0].length || 0,
+  height: (get) => get(grid).length || 0,
 });
 devtools(size, { name: 'nonogram.size' });
 
@@ -115,8 +89,34 @@ export const hints = derive({
 devtools(hints, { name: 'nonogram.hints' });
 
 export function generate(width: number, height: number) {
+  const grid: types.Cell[][] = [];
+  const r = new Array(height).fill(true);
+  const c = new Array(width).fill(true);
+
+  for (let y = 0; y < height; y++) {
+    grid[y] = [];
+    for (let x = 0; x < width; x++) {
+      const value = Math.random() < 0.5 ? 1 : 0;
+      grid[y][x] = [value];
+
+      if (value !== 1) continue;
+      r[y] = false;
+      c[x] = false;
+    }
+  }
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (r[y] || c[x]) grid[y][x][1] = 0;
+    }
+  }
+
+  return grid;
+}
+
+export function save(v: types.Cell[][]) {
   grid.splice(0);
-  Object.assign(grid, _generate(width, height));
+  Object.assign(grid, v);
 }
 
 export function reset() {

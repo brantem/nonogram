@@ -4,6 +4,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 
 import SizeInput from 'components/SizeInput';
+import Basic from './Basic';
 import Image from './Image';
 
 import * as constants from 'constants';
@@ -11,32 +12,37 @@ import { cn } from 'lib/helpers';
 import * as nonogram from 'lib/state/nonogram';
 import * as shared from './shared';
 
+export enum GenerateModalType {
+  Basic = 1,
+  FromImage,
+}
+
 export type GenerateModalHandle = {
-  open(): void;
+  open(type: GenerateModalType): void;
 };
 
 export default function GenerateModal({ ref }: { ref: React.Ref<GenerateModalHandle> }) {
   const state = useSnapshot(shared.state);
 
-  const imageRef = useRef<shared.Handle>(null);
+  const generatorRef = useRef<shared.Handle>(null);
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [type, setType] = useState(0);
 
   useImperativeHandle(ref, () => ({
-    open() {
-      setIsOpen(true);
+    open(type) {
+      setType(type);
     },
   }));
 
   const closeAndReset = () => {
-    setIsOpen(false);
+    setType(0);
     shared.state.grid.splice(0);
     shared.state.isGenerating = false;
   };
 
   return (
     <Dialog.Root
-      open={isOpen}
+      open={type > 0}
       onOpenChange={(open) => {
         if (open) return;
         closeAndReset();
@@ -46,7 +52,7 @@ export default function GenerateModal({ ref }: { ref: React.Ref<GenerateModalHan
         <Dialog.Overlay className={cn('fixed inset-0 z-20 bg-white/50 backdrop-blur-xs', 'dark:bg-black/50')} />
         <Dialog.Content
           className={cn(
-            'fixed z-30 max-w-full divide-y divide-neutral-200 overflow-auto border-neutral-200 bg-white shadow-xl focus:outline-none max-md:inset-0 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-md md:border',
+            'fixed z-30 flex max-w-full flex-col divide-y divide-neutral-200 overflow-auto border-neutral-200 bg-white shadow-xl focus:outline-none max-md:inset-0 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-md md:border',
             'dark:divide-neutral-800 dark:border-neutral-800 dark:bg-black dark:text-white',
           )}
           onEscapeKeyDown={(e) => e.preventDefault()}
@@ -78,7 +84,7 @@ export default function GenerateModal({ ref }: { ref: React.Ref<GenerateModalHan
                   if (values.width < constants.width.min || values.width > constants.width.max) return;
                   if (values.height < constants.height.min || values.height > constants.height.max) return;
                   // TODO: debounce
-                  imageRef.current?.generate();
+                  generatorRef.current?.generate();
                 }}
                 disabled={state.isGenerating}
               />
@@ -89,9 +95,7 @@ export default function GenerateModal({ ref }: { ref: React.Ref<GenerateModalHan
                   'dark:border-sky-800 dark:bg-sky-600 dark:hover:bg-sky-700',
                 )}
                 onClick={() => {
-                  nonogram.grid.splice(0);
-                  Object.assign(nonogram.grid, shared.state.grid);
-
+                  nonogram.save(shared.state.grid);
                   closeAndReset();
                 }}
               >
@@ -100,7 +104,8 @@ export default function GenerateModal({ ref }: { ref: React.Ref<GenerateModalHan
             </div>
           </div>
 
-          <Image ref={imageRef} />
+          {type === GenerateModalType.Basic && <Basic ref={generatorRef} />}
+          {type === GenerateModalType.FromImage && <Image ref={generatorRef} />}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

@@ -183,7 +183,7 @@ function Completed() {
     <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-white/75 dark:bg-black/75">
       <button
         className="rounded-md bg-neutral-900 px-3 py-1 text-lg text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
-        onClick={() => nonogram.generate(nonogram.size.width, nonogram.size.height)}
+        onClick={() => nonogram.save(nonogram.generate(nonogram.size.width, nonogram.size.height))}
       >
         New Board
       </button>

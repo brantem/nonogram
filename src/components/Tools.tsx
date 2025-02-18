@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { useSnapshot } from 'valtio';
 import {
   ChevronUpIcon,
@@ -11,8 +11,7 @@ import {
 } from '@heroicons/react/16/solid';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
-import SizeInput from './SizeInput';
-import GenerateModal, { GenerateModalHandle } from './GenerateModal';
+import GenerateModal, { type GenerateModalHandle, GenerateModalType } from './GenerateModal';
 
 import { cn } from 'lib/helpers';
 import * as theme from 'lib/state/theme';
@@ -79,78 +78,64 @@ function Container({ children }: React.PropsWithChildren) {
 function Grid() {
   const generateModalRef = useRef<GenerateModalHandle>(null);
 
-  const [settings, setSettings] = useState(() => ({
-    width: nonogram.size.width,
-    height: nonogram.size.height,
-  }));
-
   return (
     <>
-      <form
-        className="flex flex-1 items-stretch justify-between gap-2"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          if (settings.width < constants.width.min || settings.width > constants.width.max) return;
-          if (settings.height < constants.height.min || settings.height > constants.height.max) return;
-          nonogram.generate(settings.width, settings.height);
-        }}
-      >
-        <SizeInput
-          value={{
-            width: settings.width,
-            height: settings.height,
-          }}
-          onChange={(values) => setSettings((prev) => ({ ...prev, ...values }))}
-        />
+      <div className="flex font-medium text-white">
+        {/* TODO: delay before the next generate */}
+        <button
+          className={cn(
+            'rounded-l-md border border-sky-300 bg-sky-500 px-3 py-1 hover:bg-sky-400 focus:z-10',
+            'dark:border-sky-800 dark:bg-sky-600 dark:hover:bg-sky-700',
+          )}
+          onClick={() => nonogram.save(nonogram.generate(nonogram.size.width, nonogram.size.height))}
+        >
+          New
+        </button>
 
-        <div className="flex font-medium text-white">
-          {/* TODO: delay before the next generate */}
-          <button
-            type="submit"
-            className={cn(
-              'rounded-l-md border border-sky-300 bg-sky-500 px-3 py-1 hover:bg-sky-400 focus:z-10',
-              'dark:border-sky-800 dark:bg-sky-600 dark:hover:bg-sky-700',
-            )}
-          >
-            New
-          </button>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button
+              type="button"
+              className={cn(
+                '-ml-px flex size-8 items-center justify-center rounded-r-md border border-sky-300 bg-sky-500 hover:bg-sky-400',
+                'dark:border-sky-800 dark:bg-sky-600 dark:hover:bg-sky-700',
+              )}
+            >
+              <ChevronDownIcon className="size-4" />
+            </button>
+          </DropdownMenu.Trigger>
 
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button
-                type="button"
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              className={cn(
+                'mt-1 w-[150px] rounded-md border border-neutral-200 bg-white p-0.5 text-sm shadow-xs',
+                'dark:border-neutral-800 dark:bg-neutral-950 dark:text-white',
+              )}
+              side="bottom"
+              align="end"
+            >
+              <DropdownMenu.Item
                 className={cn(
-                  '-ml-px flex size-8 items-center justify-center rounded-r-md border border-sky-300 bg-sky-500 hover:bg-sky-400',
-                  'dark:border-sky-800 dark:bg-sky-600 dark:hover:bg-sky-700',
+                  'flex h-8 items-center rounded px-3 outline-none select-none hover:bg-neutral-100',
+                  'dark:hover:bg-neutral-900',
                 )}
+                onClick={() => generateModalRef.current?.open(GenerateModalType.Basic)}
               >
-                <ChevronDownIcon className="size-4" />
-              </button>
-            </DropdownMenu.Trigger>
-
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content
+                Basic
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
                 className={cn(
-                  'mt-1 w-[150px] rounded-md border border-neutral-200 bg-white p-0.5 text-sm shadow-xs',
-                  'dark:border-neutral-800 dark:bg-neutral-950 dark:text-white',
+                  'flex h-8 items-center rounded px-3 outline-none select-none hover:bg-neutral-100',
+                  'dark:hover:bg-neutral-900',
                 )}
-                side="bottom"
-                align="end"
+                onClick={() => generateModalRef.current?.open(GenerateModalType.FromImage)}
               >
-                <DropdownMenu.Item
-                  className={cn(
-                    'flex h-8 items-center rounded px-3 outline-none select-none hover:bg-neutral-100',
-                    'dark:hover:bg-neutral-900',
-                  )}
-                  onClick={() => generateModalRef.current?.open()}
-                >
-                  From Image
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
-        </div>
-      </form>
+                From Image
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+      </div>
 
       <GenerateModal ref={generateModalRef} />
     </>
