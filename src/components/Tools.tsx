@@ -80,8 +80,8 @@ function Grid() {
   const generateModalRef = useRef<GenerateModalHandle>(null);
 
   const [settings, setSettings] = useState(() => ({
-    width: nonogram.settings.width,
-    height: nonogram.settings.height,
+    width: nonogram.size.width,
+    height: nonogram.size.height,
   }));
 
   return (
@@ -92,9 +92,7 @@ function Grid() {
           e.preventDefault();
           if (settings.width < constants.width.min || settings.width > constants.width.max) return;
           if (settings.height < constants.height.min || settings.height > constants.height.max) return;
-          nonogram.settings.width = settings.width;
-          nonogram.settings.height = settings.height;
-          nonogram.generate();
+          nonogram.generate(settings.width, settings.height);
         }}
       >
         <SizeInput

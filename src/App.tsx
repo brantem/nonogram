@@ -55,8 +55,6 @@ function Container({ children }: React.PropsWithChildren) {
           )}
           style={
             {
-              '--width': settings.width,
-              '--height': settings.height,
               '--cell-size': `${settings.cell.size}px`,
               '--font-size': `${(settings.cell.size / 3) * 2}px`,
             } as React.CSSProperties

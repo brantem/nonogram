@@ -7,8 +7,8 @@ import * as nonogram from 'lib/state/nonogram';
 import * as highlight from 'lib/state/highlight';
 
 export default function Left() {
-  const settings = useSnapshot(nonogram.settings);
-  const groups = generateGroups(settings.height, 5);
+  const size = useSnapshot(nonogram.size);
+  const groups = generateGroups(size.height, 5);
 
   return (
     <div className='flex flex-col divide-y-[3px] divide-neutral-500 border-[2px] border-neutral-500 [&>div>div[data-y="var(--active-y)"]]:!bg-white'>

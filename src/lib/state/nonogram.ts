@@ -32,8 +32,6 @@ function _generate(width: number, height: number) {
 }
 
 type Settings = {
-  width: number;
-  height: number;
   cell: {
     size: number;
   };
@@ -41,18 +39,24 @@ type Settings = {
 };
 
 if (!localStorage.getItem('settings')) {
-  localStorage.setItem('settings', JSON.stringify({ width: 30, height: 30, cell: { size: 24 }, isVisible: true }));
+  localStorage.setItem('settings', JSON.stringify({ cell: { size: 24 }, isVisible: true }));
 }
 export const settings = proxy<Settings>(JSON.parse(localStorage.getItem('settings')!));
 devtools(settings, { name: 'nonogram.settings' });
 subscribe(settings, () => localStorage.setItem('settings', JSON.stringify(settings)));
 
 if (!localStorage.getItem('grid')) {
-  localStorage.setItem('grid', JSON.stringify(_generate(settings.width, settings.height)));
+  localStorage.setItem('grid', JSON.stringify(_generate(50, 50)));
 }
 export const grid = proxy<types.Cell[][]>(JSON.parse(localStorage.getItem('grid')!));
 devtools(grid, { name: 'nonogram.grid' });
 subscribe(grid, () => localStorage.setItem('grid', JSON.stringify(grid)));
+
+export const size = derive({
+  width: (get) => get(grid)[0].length,
+  height: (get) => get(grid).length,
+});
+devtools(size, { name: 'nonogram.size' });
 
 export const status = derive({
   isCompleted: (get) => {
@@ -64,13 +68,14 @@ devtools(status, { name: 'nonogram.status' });
 export const hints = derive({
   top: (get) => {
     const _grid = get(grid);
+    const { width, height } = get(size);
 
     const hints = [];
-    for (let x = 0; x < settings.width; x++) {
+    for (let x = 0; x < width; x++) {
       let arr: types.Hint[] = [];
       let temp = 0;
       let match = 0;
-      for (let y = 0; y < settings.height; y++) {
+      for (let y = 0; y < height; y++) {
         const cell = _grid[y][x];
         if (cell[0]) {
           temp++;
@@ -109,9 +114,9 @@ export const hints = derive({
 });
 devtools(hints, { name: 'nonogram.hints' });
 
-export function generate() {
+export function generate(width: number, height: number) {
   grid.splice(0);
-  Object.assign(grid, _generate(settings.width, settings.height));
+  Object.assign(grid, _generate(width, height));
 }
 
 export function reset() {

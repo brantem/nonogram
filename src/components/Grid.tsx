@@ -10,8 +10,8 @@ import * as highlight from 'lib/state/highlight';
 import * as selection from 'lib/state/selection';
 
 export default function Grid() {
-  const settings = useSnapshot(nonogram.settings);
-  const groups = generateGroups(settings.height, 5);
+  const size = useSnapshot(nonogram.size);
+  const groups = generateGroups(size.height, 5);
 
   return (
     <div
@@ -108,8 +108,8 @@ function Selection() {
 }
 
 function Row({ y, isLast }: { y: number; isLast: boolean }) {
-  const settings = useSnapshot(nonogram.settings);
-  const groups = generateGroups(settings.width, 5);
+  const size = useSnapshot(nonogram.size);
+  const groups = generateGroups(size.width, 5);
 
   return (
     <div className="flex divide-x-[3px] divide-neutral-500">
@@ -183,7 +183,7 @@ function Completed() {
     <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-white/75 dark:bg-black/75">
       <button
         className="rounded-md bg-neutral-900 px-3 py-1 text-lg text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
-        onClick={nonogram.generate}
+        onClick={() => nonogram.generate(nonogram.size.width, nonogram.size.height)}
       >
         New Board
       </button>

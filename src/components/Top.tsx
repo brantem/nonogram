@@ -7,8 +7,8 @@ import * as nonogram from 'lib/state/nonogram';
 import * as highlight from 'lib/state/highlight';
 
 export default function Top() {
-  const settings = useSnapshot(nonogram.settings);
-  const groups = generateGroups(settings.width, 5);
+  const size = useSnapshot(nonogram.size);
+  const groups = generateGroups(size.width, 5);
 
   return (
     <div className="flex divide-x-[3px] divide-neutral-500 border-[2px] border-neutral-500">

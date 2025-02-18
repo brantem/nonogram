@@ -27,8 +27,8 @@ type Data = {
 };
 
 const generateDefaultData = (): Data => ({
-  width: nonogram.settings.width,
-  height: nonogram.settings.height,
+  width: nonogram.size.width,
+  height: nonogram.size.height,
   options: {
     threshold: 128,
     fit: 'cover',
@@ -144,9 +144,6 @@ export default function GenerateModal({ ref }: { ref: React.Ref<GenerateModalHan
                   'dark:border-sky-800 dark:bg-sky-600 dark:hover:bg-sky-700',
                 )}
                 onClick={() => {
-                  nonogram.settings.width = data.width;
-                  nonogram.settings.height = data.height;
-
                   nonogram.grid.splice(0);
                   Object.assign(nonogram.grid, grid);
 
